@@ -1,35 +1,31 @@
 import React, {useEffect} from 'react';
 import {Grid} from "@mui/material";
-import {useForm, Form} from ".././../components/useForm";
+import {useForm, Form} from "../../components/useForm";
 import Controls from "../../components/controls/Controls";
+import moment from 'moment';
 
 const initialFValues = {
     id: 0,
-    supName: '',
-    address1:'',
-    address2:'',
-    address3:'',
-    email:'',
-    contact:'',
-    gender:'male',
-    departmentId:'',
+    stockDate: new Date(),
+    quantity:0,
+    supplierId:'',
+    supplierName:'',
+    itemId:'',
+    itemName:'',
+    // itemId:''
 }
 
-export default function SupplierForm(props) {
+export default function StockForm(props) {
 
-    const {addOrEdit, recordForEdit} = props
-
+    const {addOrEdit, recordForEdit, supplierOptions, itemOptions, disabled} = props
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        // if('supName' in fieldValues) {
-        //     temp.supName = fieldValues.supName ? "" : "This field is required"
+        // if('stockDate' in fieldValues) {
+        //     temp.stockDate = fieldValues.stockDate ? "" : "This field is required"
         // }
         // if('contact' in fieldValues) {
         //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
         // }
-        if('email' in fieldValues) {
-            temp.email = (/$^|.+@.+..+/).test(values.email) ? "" : "Email is not valid"
-        }
         // if('departmentId' in fieldValues) {
         //     temp.departmentId = values.departmentId.length != 0 ? "" : "Thid field is required"
         // }
@@ -70,50 +66,42 @@ export default function SupplierForm(props) {
         <Form onSubmit={handleSubmit}>
             <Grid container direction="row">
                 <Grid item xs={6}>
-                    <Controls.Input
-                        name="supName"
-                        label="Supplier Name"
-                        value={values.supName}
+                    <Controls.DatePicker
+                        name="stockDate"
+                        label="Select Stock Date"
+                        value={values.stockDate}
                         onChange={handleInputChange}
-                        error={errors.supName}
+                        error={errors.stockDate}
                     />
 
                     <Controls.Input
-                        name="address1"
-                        label="Address Line 1"
-                        value={values.address1}
+                        name="quantity"
+                        label="Enter Stock Quantity"
+                        value={values.quantity}
                         onChange={handleInputChange}
+                        error={errors.quantity}
+                        disabled={disabled}
+                        type='number'
                     />
 
-                    <Controls.Input
-                        name="address2"
-                        label="Address Line 2"
-                        value={values.address2}
+                    <Controls.Select
+                        name="supplierId"
+                        label="Select Supplier"
+                        options={supplierOptions}
+                        value={values.supplierId}
                         onChange={handleInputChange}
+                        error={errors.supplierId}
+                        disabled={disabled}
                     />
 
-                    <Controls.Input
-                        name="address3"
-                        label="Address Line 3"
-                        value={values.address3}
+                    <Controls.Select
+                        name="itemId"
+                        label="Select Item"
+                        options={itemOptions}
+                        value={values.itemId}
                         onChange={handleInputChange}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <Controls.Input
-                        name="email"
-                        label="Email"
-                        value={values.email}
-                        onChange={handleInputChange}
-                        error={errors.email}
-                    />
-
-                    <Controls.Input
-                        name="contact"
-                        label="Contact (Number 1, Number 2, ....)"
-                        value={values.contact}
-                        onChange={handleInputChange}
-                        error={errors.contact}
+                        error={errors.itemId}
+                        disabled={disabled}
                     />
 
                     <Controls.Button

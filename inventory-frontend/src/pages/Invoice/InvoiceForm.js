@@ -15,15 +15,15 @@ const initialFValues = {
     departmentId:'',
 }
 
-export default function SupplierForm(props) {
+export default function InvoiceForm(props) {
 
     const {addOrEdit, recordForEdit} = props
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        // if('supName' in fieldValues) {
-        //     temp.supName = fieldValues.supName ? "" : "This field is required"
-        // }
+        if('supName' in fieldValues) {
+            temp.supName = fieldValues.supName ? "" : "This field is required"
+        }
         // if('contact' in fieldValues) {
         //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
         // }

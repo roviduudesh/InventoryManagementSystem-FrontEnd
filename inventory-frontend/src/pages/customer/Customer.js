@@ -1,21 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import axios from "axios";
-import CreateIcon from '@mui/icons-material/Create';
 import PeopleAltTwoToneIcon from "@mui/icons-material/PeopleAltTwoTone";
-import {ModeEditOutlined} from "@mui/icons-material";
-import DeleteIcon from '@mui/icons-material/Delete';
+import {InputAdornment, Paper, TableBody, TableCell, TableRow, Toolbar} from "@mui/material";
+import {makeStyles} from "@mui/styles";
 import Search from "@mui/icons-material/Search"
 import AddIcon from '@mui/icons-material/Add';
-import Popup from "../../components/Popup";
-import {makeStyles} from "@mui/styles";
-import {InputAdornment, Paper, TableBody, TableCell, TableRow, Toolbar} from "@mui/material";
+import {ModeEditOutlined} from "@mui/icons-material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import CreateIcon from '@mui/icons-material/Create';
+import axios from 'axios';
+import CustomerForm from "./CustomerForm";
+import PageHeader from "../../components/PageHeader";
 import useTable from "../../components/useTable"
 import Controls from "../../components/controls/Controls";
+import Popup from "../../components/Popup";
 import Notification from '../../components/Notification'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import SupplierForm from "./SupplierForm";
-import PageHeader from "../../components/PageHeader";
-import Loader from "../../components/Loader";
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -33,7 +32,8 @@ const useStyles = makeStyles(theme =>({
 }));
 
 const headCells = [
-    {id: 'supName', label:'Supplier Name'},
+    {id: 'firstName', label:'First Name'},
+    {id: 'lastName', label:'Last Name'},
     {id: 'address1', label:'Address Line 1'},
     {id: 'address2', label:'Address Line 2'},
     {id: 'address3', label:'Address Line 3'},
@@ -42,7 +42,7 @@ const headCells = [
     {id: 'actions', label:'Actions', disableSorting: true}
 ]
 
-export default function Supplier(props) {
+export default function Customer(props) {
 
     const {loading, setLoading} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
@@ -56,14 +56,16 @@ export default function Supplier(props) {
     useEffect(() => {
         setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/supplier/all')
+        axios.get('http://localhost:8080/api/v1/customer/all')
         .then((function (response){
-            // console.log("response.data", response.data)
+            console.log("response.data", response.data)
             setRecords(response.data.data)
             setLoading(false);
+            // return list;
         }))
     }, [notify]);
    
+
     const {
         TblContainer,
         TblHead,
@@ -78,33 +80,32 @@ export default function Supplier(props) {
                 if(target.value == "")
                     return items;
                 else
-                    return items.filter(x => x.supName.toLowerCase().includes(target.value.toLowerCase()))
+                    return items.filter(x => (x.firstName + x.lastName).toLowerCase().includes(target.value.toLowerCase()))
             }
         })
     }
 
-    const addOrEdit = (supplier, resetForm) => {
+    const addOrEdit = (customer, resetForm) => {
         setLoading(true);
-        if(supplier.id == 0){
-            axios.post('http://localhost:8080/api/v1/supplier', supplier)
+        if(customer.id == 0){
+            axios.post('http://localhost:8080/api/v1/customer', customer)
             .then(response => {
-                // console.log("Status: ", response.status);
-                console.log("response.data: ", response.data);
+                console.log("Status: ", response.status);
+                console.log("Message: ", response);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';               
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
         }
         else{
-            axios.put('http://localhost:8080/api/v1/supplier/' + supplier.id, supplier)
+            console.log('customer ', customer);
+            axios.put('http://localhost:8080/api/v1/customer/' + customer.id, customer)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
@@ -115,46 +116,53 @@ export default function Supplier(props) {
     }
 
     const notification = (open, message, type) =>{
+        console.log('AAAAAAAA')
         setNotify({
             isOpen: open,
             message: message,
             type: type
         })
     }
-    
+
     const openInPopup = item =>{
         setRecordForEdit(item)
         setOpenPopup(true);
     }
 
     const onDelete = id => {
+
         setConfirmDialog({
             ...confirmDialog,
             isOpen: false
         })
-        setLoading(true);
-        axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
+        axios.delete('http://localhost:8080/api/v1/customer/'+ id)
         .then(response => {
+            // setLoading(false);
+            console.log("delete: ", response);
             setLoading(false);
-            let type = response.data.status == 200 ? 'success' : 'error';
-            notification(true, response.data.message, type);
+            notification(true, response.data.message, 'success');
         }).catch(error => {
             console.log('Something went wrong!', error);
         });
     }
 
     return (
+
         <>
+
             <PageHeader
-                title="Supplier"
-                subTitle="View/ Add / Update / Delete Suppliers"
+                title="Customer"
+                subTitle="View/ Add / Update / Delete Customers"
                 icon={<PeopleAltTwoToneIcon fontSize="large"/>}
             />
+            {/*{loading ? <div>Loading....</div> :*/}
                 <Paper className={classes.pageContent}>
+                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
+
                     <Toolbar>
                         <Controls.Input
                             className={classes.searchInput}
-                            label="Search Suppliers"
+                            label="Search Customers"
                             InputProps={{
                                 startAdornment: (<InputAdornment position='start'>
                                     <Search/>
@@ -179,7 +187,8 @@ export default function Supplier(props) {
                             {
                                 recordsAfterPagingAndSorting().map(item =>
                                     (<TableRow key={item.id}>
-                                        <TableCell>{item.supName}</TableCell>
+                                        <TableCell>{item.firstName}</TableCell>
+                                        <TableCell>{item.lastName}</TableCell>
                                         <TableCell>{item.address1}</TableCell>
                                         <TableCell>{item.address2}</TableCell>
                                         <TableCell>{item.address3}</TableCell>
@@ -227,14 +236,12 @@ export default function Supplier(props) {
                 </Paper>
             {/*}*/}
 
-            <Loader/>
-
             <Popup
-                title="Supplier Form"
+                title="Customer Form"
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
-                <SupplierForm
+                <CustomerForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit}
                 />

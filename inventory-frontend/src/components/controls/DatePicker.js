@@ -9,7 +9,7 @@ export default function DatePicker(props) {
     const{name, label, value, onChange} = props
 
     const convertToDefEventPara = (name, value) => ({
-        target: {
+        target: {  
             name, value
         }
     });

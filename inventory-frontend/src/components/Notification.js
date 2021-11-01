@@ -12,17 +12,17 @@ export default function Notification(props) {
             isOpen: false
         })
     }
-
+    
     return (
         <Snackbar
             style={{marginTop:'3%'}}
             open={notify.isOpen}
-            autoHideDuration={2000}
+            autoHideDuration={4000}
             anchorOrigin={{vertical:'top', horizontal:'right'}}
             onClose={handleClose}
         >
             <Alert
-                severity={notify.type}
+                severity={notify.type ? notify.type : null}
                 onClose={handleClose}
             >
                 <b>{notify.message}</b>

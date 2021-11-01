@@ -1,29 +1,25 @@
 import React, {useEffect} from 'react';
 import {Grid} from "@mui/material";
-import {useForm, Form} from ".././../components/useForm";
+import {useForm, Form} from "../../components/useForm";
 import Controls from "../../components/controls/Controls";
 
 const initialFValues = {
     id: 0,
-    supName: '',
-    address1:'',
-    address2:'',
-    address3:'',
-    email:'',
-    contact:'',
-    gender:'male',
-    departmentId:'',
+    name: '',
+    price:'',
+    quantity: 0,
+    warranty:'',
 }
 
-export default function SupplierForm(props) {
+export default function ItemForm(props) {
 
     const {addOrEdit, recordForEdit} = props
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        // if('supName' in fieldValues) {
-        //     temp.supName = fieldValues.supName ? "" : "This field is required"
-        // }
+        if('supName' in fieldValues) {
+            temp.supName = fieldValues.supName ? "" : "This field is required"
+        }
         // if('contact' in fieldValues) {
         //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
         // }
@@ -68,67 +64,60 @@ export default function SupplierForm(props) {
 
     return (
         <Form onSubmit={handleSubmit}>
-            <Grid container direction="row">
-                <Grid item xs={6}>
+            <Grid container>
+                <Grid 
+                container
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+                style={{width:'400px'}}
+                >
                     <Controls.Input
-                        name="supName"
-                        label="Supplier Name"
-                        value={values.supName}
+                        name="name"
+                        label="Item Name"
+                        value={values.name}
                         onChange={handleInputChange}
-                        error={errors.supName}
+                        error={errors.name}
                     />
 
                     <Controls.Input
-                        name="address1"
-                        label="Address Line 1"
-                        value={values.address1}
+                        name="price"
+                        label="Item Price"
+                        value={values.price}
                         onChange={handleInputChange}
+                        error={errors.price}
                     />
 
                     <Controls.Input
-                        name="address2"
-                        label="Address Line 2"
-                        value={values.address2}
-                        onChange={handleInputChange}
+                        name="quantity"
+                        label="Item Quantity"
+                        value={values.quantity}
+                        onChange={handleInputChange} 
+                        error={errors.quantity}
                     />
 
                     <Controls.Input
-                        name="address3"
-                        label="Address Line 3"
-                        value={values.address3}
-                        onChange={handleInputChange}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <Controls.Input
-                        name="email"
-                        label="Email"
-                        value={values.email}
-                        onChange={handleInputChange}
-                        error={errors.email}
-                    />
-
-                    <Controls.Input
-                        name="contact"
-                        label="Contact (Number 1, Number 2, ....)"
-                        value={values.contact}
-                        onChange={handleInputChange}
-                        error={errors.contact}
+                        name="warranty"
+                        label="Item warranty (months)"
+                        value={values.warranty}
+                        onChange={handleInputChange} 
+                        error={errors.warranty}
                     />
 
                     <Controls.Button
                         style={{marginLeft: 10}}
                         type="submit"
                         text="Submit"
-                    />
+                    />  
 
                     <Controls.Button
-                        style={{marginLeft: 10}}
+                        style={{marginLeft: 10, marginTop: 10}}
                         color="inherit"
                         text="Reset"
                         onClick={resetForm}
                     />
                 </Grid>
+            
             </Grid>
         </Form>
     );

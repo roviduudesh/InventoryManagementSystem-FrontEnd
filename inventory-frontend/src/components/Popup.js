@@ -6,11 +6,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from "@mui/icons-material/Add";
 
 const useStyles = makeStyles(theme => ({
-    dialogWrapper: {
-        padding: 2,
-        position:'absolute',
-        top: 5
-    },
+    // dialogWrapper: {
+    // //     width: '10',
+    // // height: '100%',
+    // // display: 'absolute',
+    // // alignItems: 'center',
+    // // justifyContent: 'center',
+    // // backgroundColor: 'pink',
+    // },
     dialogTitle:{
         paddingRight: "0px"
     }
@@ -22,7 +25,7 @@ export default function Popup(props) {
     const classes = useStyles();
 
     return (
-        <Dialog open={openPopup} maxWidth="md" classes={{ paper : classes.dialogWrapper}}>
+        <Dialog open={openPopup}>
             <DialogTitle className={classes.dialogTitle}>
                 <div style={{display: 'flex'}}>
                     <Typography variant="h6" component="div" style={{flexGrow:1}}>
@@ -39,7 +42,7 @@ export default function Popup(props) {
                     </Controls.Button>
                 </div>
             </DialogTitle>
-            <DialogContent dividers>
+            <DialogContent dividers  className={classes.dialogWrapper}>
                 {children}
             </DialogContent>
         </Dialog>

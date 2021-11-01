@@ -1,4 +1,5 @@
 import axios from "axios";
+import React, {useEffect, useState} from 'react';
 
 const KEYS ={
     suppliers: 'suppliers',
@@ -15,23 +16,40 @@ export const getDepartmentCollection = () => ([
 ])
 
 export function insertSupplier(data){
-    let suppliers = getAllSuppliers();
-    data['id'] = generateSupplierId();
-    suppliers.push(data);
-    localStorage.setItem(KEYS.suppliers, JSON.stringify(suppliers))
+    // axios.post('http://localhost:8080/api/v1/supplier', data)
+    // .then(response => {
+    //   console.log("Status: ", response.status);
+    //   console.log("Message: ", response);
+    // }).catch(error => {
+    //   console.error('Something went wrong!', error);
+    // });
 }
+// export function insertSupplier(data){
+//     console.log('data', data)
+//     let suppliers = getAllSuppliers();
+//     data['id'] = generateSupplierId();
+//     suppliers.push(data);
+//     localStorage.setItem(KEYS.suppliers, JSON.stringify(suppliers))
+// }
 
 export function updateSupplier(data){
-    let suppliers = getAllSuppliers();
-    let recordIndex = suppliers.findIndex(x => x.id == data.id);
-    suppliers[recordIndex] = { ...data}
-    localStorage.setItem(KEYS.suppliers, JSON.stringify(suppliers))
+    // axios.put('http://localhost:8080/api/v1/supplier/'+ data.id, data)
+    // .then(response => {
+    //   console.log("Status: ", response.status);
+    //   console.log("Message: ", response);
+    // }).catch(error => {
+    //   console.error('Something went wrong!', error);
+    // });
 }
 
 export function deleteSupplier(id){
-    let suppliers = getAllSuppliers();
-    suppliers = suppliers.filter(x => x.id != id)
-    localStorage.setItem(KEYS.suppliers, JSON.stringify(suppliers))
+    axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
+    .then(response => {
+      console.log("Status: ", response.status);
+      console.log("Message: ", response);
+    }).catch(error => {
+      console.error('Something went wrong!', error);
+    });
 }
 
 export function generateSupplierId(){
@@ -50,13 +68,11 @@ export function getAllSuppliers(){
     return JSON.parse(localStorage.getItem(KEYS.suppliers));
 }
 
-export async function getAllSuppliersAPI(){
-    let list = {};
-    await axios.get('http://localhost:8080/api/v1/supplier/all')
-        .then((function (response){
-            // console.log(response.data.data)
-            list =  response.data.data;
-        }))
-    console.log(list)
-    return list;
+export async function getAllSuppliersAPI(setRecords){
+    // await axios.get('http://localhost:8080/api/v1/supplier/all')
+    //     .then((function (response){
+    //         console.log("response.data.data", response.data.data)
+    //         setRecords(response.data.data)
+    //         // return list;
+    //     }))
 }

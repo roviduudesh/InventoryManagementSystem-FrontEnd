@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import CreateIcon from '@mui/icons-material/Create';
-import PeopleAltTwoToneIcon from "@mui/icons-material/PeopleAltTwoTone";
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import {ModeEditOutlined} from "@mui/icons-material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Search from "@mui/icons-material/Search"
@@ -13,7 +13,7 @@ import useTable from "../../components/useTable"
 import Controls from "../../components/controls/Controls";
 import Notification from '../../components/Notification'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import SupplierForm from "./SupplierForm";
+import ItemForm from "./ItemForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
 
@@ -33,16 +33,14 @@ const useStyles = makeStyles(theme =>({
 }));
 
 const headCells = [
-    {id: 'supName', label:'Supplier Name'},
-    {id: 'address1', label:'Address Line 1'},
-    {id: 'address2', label:'Address Line 2'},
-    {id: 'address3', label:'Address Line 3'},
-    {id: 'email', label:'Email'},
-    {id: 'contact', label:'Contact Numbers', disableSorting: true},
+    {id: 'name', label:'Item Name'},
+    {id: 'price', label:'Item Price'},
+    {id: 'quantity', label:'Item Quantity'},
+    {id: 'warranty', label:'Item Warranty'},
     {id: 'actions', label:'Actions', disableSorting: true}
 ]
 
-export default function Supplier(props) {
+export default function Item(props) {
 
     const {loading, setLoading} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
@@ -56,11 +54,12 @@ export default function Supplier(props) {
     useEffect(() => {
         setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/supplier/all')
+        axios.get('http://localhost:8080/api/v1/item/all')
         .then((function (response){
-            // console.log("response.data", response.data)
+            console.log("response.data", response.data)
             setRecords(response.data.data)
             setLoading(false);
+            // return list;
         }))
     }, [notify]);
    
@@ -78,33 +77,31 @@ export default function Supplier(props) {
                 if(target.value == "")
                     return items;
                 else
-                    return items.filter(x => x.supName.toLowerCase().includes(target.value.toLowerCase()))
+                    return items.filter(x => x.name.toLowerCase().includes(target.value.toLowerCase()))
             }
         })
     }
 
-    const addOrEdit = (supplier, resetForm) => {
+    const addOrEdit = (item, resetForm) => {
+        console.log('item', item)
         setLoading(true);
-        if(supplier.id == 0){
-            axios.post('http://localhost:8080/api/v1/supplier', supplier)
+        if(item.id == 0){
+            axios.post('http://localhost:8080/api/v1/item', item)
             .then(response => {
-                // console.log("Status: ", response.status);
-                console.log("response.data: ", response.data);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';               
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
         }
         else{
-            axios.put('http://localhost:8080/api/v1/supplier/' + supplier.id, supplier)
+            console.log('AAAA')
+            axios.put('http://localhost:8080/api/v1/item/' + item.id, item)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
@@ -133,28 +130,36 @@ export default function Supplier(props) {
             isOpen: false
         })
         setLoading(true);
-        axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
+
+        // supplierService.deleteSupplier(id);
+        // setRecords(supplierService.getAllSuppliers());
+        axios.delete('http://localhost:8080/api/v1/item/'+ id)
         .then(response => {
+            // setLoading(false);
+            console.log("delete: ", response);
             setLoading(false);
-            let type = response.data.status == 200 ? 'success' : 'error';
-            notification(true, response.data.message, type);
+            notification(true, response.data.message, 'success');
         }).catch(error => {
             console.log('Something went wrong!', error);
         });
     }
 
     return (
+
         <>
             <PageHeader
-                title="Supplier"
-                subTitle="View/ Add / Update / Delete Suppliers"
-                icon={<PeopleAltTwoToneIcon fontSize="large"/>}
+                title="Item"
+                subTitle="View/ Add / Update / Delete Items"
+                icon={<AppRegistrationIcon fontSize="large"/>}
             />
+            {/*{loading ? <div>Loading....</div> :*/}
                 <Paper className={classes.pageContent}>
+                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
+
                     <Toolbar>
                         <Controls.Input
                             className={classes.searchInput}
-                            label="Search Suppliers"
+                            label="Search Items"
                             InputProps={{
                                 startAdornment: (<InputAdornment position='start'>
                                     <Search/>
@@ -178,13 +183,11 @@ export default function Supplier(props) {
                         <TableBody>
                             {
                                 recordsAfterPagingAndSorting().map(item =>
-                                    (<TableRow key={item.id}>
-                                        <TableCell>{item.supName}</TableCell>
-                                        <TableCell>{item.address1}</TableCell>
-                                        <TableCell>{item.address2}</TableCell>
-                                        <TableCell>{item.address3}</TableCell>
-                                        <TableCell>{item.email}</TableCell>
-                                        <TableCell>{item.contact}</TableCell>
+                                    (<TableRow>
+                                        <TableCell>{item.name}</TableCell>
+                                        <TableCell>{item.price}</TableCell>
+                                        <TableCell>{item.quantity}</TableCell>
+                                        <TableCell>{item.warranty}</TableCell>
                                         <TableCell>
                                             {/*Update data*/}
                                             <Controls.Button
@@ -230,11 +233,11 @@ export default function Supplier(props) {
             <Loader/>
 
             <Popup
-                title="Supplier Form"
+                title="Item Form"
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
-                <SupplierForm
+                <ItemForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit}
                 />

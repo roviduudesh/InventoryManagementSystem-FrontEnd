@@ -1,29 +1,28 @@
 import React, {useEffect} from 'react';
 import {Grid} from "@mui/material";
-import {useForm, Form} from ".././../components/useForm";
+import {useForm, Form} from "../../components/useForm";
 import Controls from "../../components/controls/Controls";
 
 const initialFValues = {
     id: 0,
-    supName: '',
+    firstName: '',
+    lastName: '',
     address1:'',
     address2:'',
     address3:'',
     email:'',
-    contact:'',
-    gender:'male',
-    departmentId:'',
+    contact:''
 }
 
-export default function SupplierForm(props) {
+export default function CustomerForm(props) {
 
     const {addOrEdit, recordForEdit} = props
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        // if('supName' in fieldValues) {
-        //     temp.supName = fieldValues.supName ? "" : "This field is required"
-        // }
+        if('firstName' in fieldValues) {
+            temp.firstName = fieldValues.firstName ? "" : "This field is required"
+        }
         // if('contact' in fieldValues) {
         //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
         // }
@@ -67,17 +66,43 @@ export default function SupplierForm(props) {
     }, [recordForEdit])
 
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} style={{ overflow: "hidden" }}>
             <Grid container direction="row">
                 <Grid item xs={6}>
                     <Controls.Input
-                        name="supName"
-                        label="Supplier Name"
-                        value={values.supName}
+                        name="firstName"
+                        label="First Name"
+                        value={values.firstName}
                         onChange={handleInputChange}
-                        error={errors.supName}
+                        error={errors.firstName}
                     />
 
+                    <Controls.Input
+                        name="lastName"
+                        label="Last Name"
+                        value={values.lastName}
+                        onChange={handleInputChange}
+                        error={errors.lastName}
+                    />
+
+                    <Controls.Input
+                        name="email"
+                        label="Email"
+                        value={values.email}
+                        onChange={handleInputChange}
+                        error={errors.email}
+                    />
+
+                    <Controls.Input
+                        name="contact"
+                        label="Contact (Number 1, Number 2, ....)"
+                        value={values.contact}
+                        onChange={handleInputChange}
+                        error={errors.contact}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    
                     <Controls.Input
                         name="address1"
                         label="Address Line 1"
@@ -97,23 +122,6 @@ export default function SupplierForm(props) {
                         label="Address Line 3"
                         value={values.address3}
                         onChange={handleInputChange}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <Controls.Input
-                        name="email"
-                        label="Email"
-                        value={values.email}
-                        onChange={handleInputChange}
-                        error={errors.email}
-                    />
-
-                    <Controls.Input
-                        name="contact"
-                        label="Contact (Number 1, Number 2, ....)"
-                        value={values.contact}
-                        onChange={handleInputChange}
-                        error={errors.contact}
                     />
 
                     <Controls.Button

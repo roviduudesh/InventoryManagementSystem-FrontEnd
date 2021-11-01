@@ -9,11 +9,12 @@ import AddIcon from '@mui/icons-material/Add';
 import Popup from "../../components/Popup";
 import {makeStyles} from "@mui/styles";
 import {InputAdornment, Paper, TableBody, TableCell, TableRow, Toolbar} from "@mui/material";
+import moment from 'moment';
 import useTable from "../../components/useTable"
 import Controls from "../../components/controls/Controls";
 import Notification from '../../components/Notification'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import SupplierForm from "./SupplierForm";
+import InvoiceForm from "./InvoiceForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
 
@@ -33,16 +34,14 @@ const useStyles = makeStyles(theme =>({
 }));
 
 const headCells = [
-    {id: 'supName', label:'Supplier Name'},
-    {id: 'address1', label:'Address Line 1'},
-    {id: 'address2', label:'Address Line 2'},
-    {id: 'address3', label:'Address Line 3'},
-    {id: 'email', label:'Email'},
-    {id: 'contact', label:'Contact Numbers', disableSorting: true},
-    {id: 'actions', label:'Actions', disableSorting: true}
+    {id: 'orderId', label:'Invoice'},
+    {id: 'orderDate', label:'Invoice Date'},
+    {id: 'customerName', label:'Customer Name'},
+    {id: 'amount', label:'Total Amount'},
+    {id: 'actions', label:'View Details', disableSorting: true}
 ]
 
-export default function Supplier(props) {
+export default function Invoice(props) {
 
     const {loading, setLoading} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
@@ -56,11 +55,12 @@ export default function Supplier(props) {
     useEffect(() => {
         setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/supplier/all')
+        axios.get('http://localhost:8080/api/v1/order/all')
         .then((function (response){
-            // console.log("response.data", response.data)
+            console.log("response.data", response.data)
             setRecords(response.data.data)
             setLoading(false);
+            // return list;
         }))
     }, [notify]);
    
@@ -86,25 +86,25 @@ export default function Supplier(props) {
     const addOrEdit = (supplier, resetForm) => {
         setLoading(true);
         if(supplier.id == 0){
+            // supplierService.insertSupplier(supplier);
             axios.post('http://localhost:8080/api/v1/supplier', supplier)
             .then(response => {
-                // console.log("Status: ", response.status);
-                console.log("response.data: ", response.data);
+                console.log("Status: ", response.status);
+                console.log("Message: ", response);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';               
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
         }
         else{
+            // supplierService.updateSupplier(supplier, setNotify);
             axios.put('http://localhost:8080/api/v1/supplier/' + supplier.id, supplier)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
@@ -115,6 +115,7 @@ export default function Supplier(props) {
     }
 
     const notification = (open, message, type) =>{
+        console.log('AAAAAAAA')
         setNotify({
             isOpen: open,
             message: message,
@@ -133,28 +134,36 @@ export default function Supplier(props) {
             isOpen: false
         })
         setLoading(true);
+
+        // supplierService.deleteSupplier(id);
+        // setRecords(supplierService.getAllSuppliers());
         axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
         .then(response => {
+            // setLoading(false);
+            console.log("delete: ", response);
             setLoading(false);
-            let type = response.data.status == 200 ? 'success' : 'error';
-            notification(true, response.data.message, type);
+            notification(true, response.data.message, 'success');
         }).catch(error => {
             console.log('Something went wrong!', error);
         });
     }
 
     return (
+
         <>
             <PageHeader
-                title="Supplier"
-                subTitle="View/ Add / Update / Delete Suppliers"
+                title="Invoice"
+                subTitle="View/ Add / Update / Delete Invoices"
                 icon={<PeopleAltTwoToneIcon fontSize="large"/>}
             />
+            {/*{loading ? <div>Loading....</div> :*/}
                 <Paper className={classes.pageContent}>
+                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
+
                     <Toolbar>
                         <Controls.Input
                             className={classes.searchInput}
-                            label="Search Suppliers"
+                            label="Search Invoices"
                             InputProps={{
                                 startAdornment: (<InputAdornment position='start'>
                                     <Search/>
@@ -178,13 +187,11 @@ export default function Supplier(props) {
                         <TableBody>
                             {
                                 recordsAfterPagingAndSorting().map(item =>
-                                    (<TableRow key={item.id}>
-                                        <TableCell>{item.supName}</TableCell>
-                                        <TableCell>{item.address1}</TableCell>
-                                        <TableCell>{item.address2}</TableCell>
-                                        <TableCell>{item.address3}</TableCell>
-                                        <TableCell>{item.email}</TableCell>
-                                        <TableCell>{item.contact}</TableCell>
+                                    (<TableRow>
+                                        <TableCell>{item.orderId}</TableCell>
+                                        <TableCell>{moment(item.orderDate).format('DD/MMM/yyyy')}</TableCell>
+                                        <TableCell>{item.customerName}</TableCell>
+                                        <TableCell>{item.totalAmount}</TableCell>
                                         <TableCell>
                                             {/*Update data*/}
                                             <Controls.Button
@@ -200,7 +207,7 @@ export default function Supplier(props) {
                                             </Controls.Button>
 
                                             {/*Delete data*/}
-                                            <Controls.Button
+                                            {/* <Controls.Button
                                                 style={{marginRight: 10, paddingLeft: 20}}
                                                 size="small"
                                                 startIcon={<DeleteIcon/>}
@@ -216,7 +223,7 @@ export default function Supplier(props) {
                                                     })
                                                 }}>
                                                 <DeleteIcon fontSize="small"/>
-                                            </Controls.Button>
+                                            </Controls.Button> */}
                                         </TableCell>
                                     </TableRow>)
                                 )
@@ -230,11 +237,11 @@ export default function Supplier(props) {
             <Loader/>
 
             <Popup
-                title="Supplier Form"
+                title="Invoice Form"
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
-                <SupplierForm
+                <InvoiceForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit}
                 />

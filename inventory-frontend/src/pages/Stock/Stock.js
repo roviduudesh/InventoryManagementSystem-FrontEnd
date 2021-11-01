@@ -13,9 +13,10 @@ import useTable from "../../components/useTable"
 import Controls from "../../components/controls/Controls";
 import Notification from '../../components/Notification'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import SupplierForm from "./SupplierForm";
+import StockForm from "./StockForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
+import moment from 'moment';
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -33,32 +34,50 @@ const useStyles = makeStyles(theme =>({
 }));
 
 const headCells = [
-    {id: 'supName', label:'Supplier Name'},
-    {id: 'address1', label:'Address Line 1'},
-    {id: 'address2', label:'Address Line 2'},
-    {id: 'address3', label:'Address Line 3'},
-    {id: 'email', label:'Email'},
-    {id: 'contact', label:'Contact Numbers', disableSorting: true},
+    {id: 'stockDate', label:'Stock Date'},
+    {id: 'quantity', label:'Stock Quantity'},
+    {id: 'supplier', label:'Supplier'},
+    {id: 'item', label:'Item Name'},
     {id: 'actions', label:'Actions', disableSorting: true}
 ]
 
-export default function Supplier(props) {
+export default function Stock(props) {
 
+    const [disabled, setDisabled] = useState(false);
     const {loading, setLoading} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
+    const [supplierOptions, setSupplierOptions] = useState([]);
+    const [itemOptions, setItemOptions] = useState([]);
     const [filterFn, setFilterFn] = useState({fn: items => {return items;}})
     const [openPopup, setOpenPopup] = useState(false);
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
     const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title:'', subTitle:''})
 
     useEffect(() => {
-        setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/supplier/all')
+
+        setLoading(true);
+        axios.get('http://localhost:8080/api/v1/supplier/stock_supplier')
         .then((function (response){
-            // console.log("response.data", response.data)
+            // console.log("setSupplierOptions", response.data.data)
+            setSupplierOptions(response.data.data)
+            setLoading(false);
+        }))
+
+        setLoading(true);
+        axios.get('http://localhost:8080/api/v1/item/stock_item')
+        .then((function (response){
+            // console.log("setItemOptions", response.data.data)
+            setItemOptions(response.data.data)
+            setLoading(false);
+        }))
+
+        setLoading(true);
+        axios.get('http://localhost:8080/api/v1/stock/all')
+        .then((function (response){
+            // console.log("response.data.data", response.data.data)
             setRecords(response.data.data)
             setLoading(false);
         }))
@@ -78,33 +97,33 @@ export default function Supplier(props) {
                 if(target.value == "")
                     return items;
                 else
-                    return items.filter(x => x.supName.toLowerCase().includes(target.value.toLowerCase()))
+                    return items.filter(x => x.stockDate.toLowerCase().includes(target.value.toLowerCase()))
             }
         })
     }
 
-    const addOrEdit = (supplier, resetForm) => {
+    const addOrEdit = (stock, resetForm) => {
+        console.log('stock', stock)
         setLoading(true);
-        if(supplier.id == 0){
-            axios.post('http://localhost:8080/api/v1/supplier', supplier)
+        if(stock.id == 0){
+            axios.post('http://localhost:8080/api/v1/stock', stock)
             .then(response => {
-                // console.log("Status: ", response.status);
-                console.log("response.data: ", response.data);
+                console.log("Status: ", response.status);
+                console.log("Message: ", response);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';               
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
         }
         else{
-            axios.put('http://localhost:8080/api/v1/supplier/' + supplier.id, supplier)
+            console.log('stock', stock)
+            axios.put('http://localhost:8080/api/v1/stock/' + stock.id, stock)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
                 setLoading(false);
-                let type = response.data.status == 200 ? 'success' : 'error';
-                notification(true, response.data.message, type);
+                notification(true, response.data.message, 'success');
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
@@ -112,9 +131,11 @@ export default function Supplier(props) {
         resetForm();
         setRecordForEdit(null);
         setOpenPopup(false);
+        setDisabled(false);
     }
 
     const notification = (open, message, type) =>{
+        // console.log('AAAAAAAA')
         setNotify({
             isOpen: open,
             message: message,
@@ -123,6 +144,7 @@ export default function Supplier(props) {
     }
     
     const openInPopup = item =>{
+        setDisabled(true);
         setRecordForEdit(item)
         setOpenPopup(true);
     }
@@ -133,24 +155,30 @@ export default function Supplier(props) {
             isOpen: false
         })
         setLoading(true);
+
         axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
         .then(response => {
+            // setLoading(false);
+            // console.log("delete: ", response);
             setLoading(false);
-            let type = response.data.status == 200 ? 'success' : 'error';
-            notification(true, response.data.message, type);
+            notification(true, response.data.message, 'success');
         }).catch(error => {
             console.log('Something went wrong!', error);
         });
     }
 
     return (
+
         <>
             <PageHeader
-                title="Supplier"
-                subTitle="View/ Add / Update / Delete Suppliers"
+                title="Stock"
+                subTitle="View/ Add / Update / Delete Stocks"
                 icon={<PeopleAltTwoToneIcon fontSize="large"/>}
             />
+            {/*{loading ? <div>Loading....</div> :*/}
                 <Paper className={classes.pageContent}>
+                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
+
                     <Toolbar>
                         <Controls.Input
                             className={classes.searchInput}
@@ -170,6 +198,7 @@ export default function Supplier(props) {
                             onClick={() => {
                                 setOpenPopup(true);
                                 setRecordForEdit(null);
+                                setDisabled(false);
                             }}
                         />
                     </Toolbar>
@@ -179,12 +208,11 @@ export default function Supplier(props) {
                             {
                                 recordsAfterPagingAndSorting().map(item =>
                                     (<TableRow key={item.id}>
-                                        <TableCell>{item.supName}</TableCell>
-                                        <TableCell>{item.address1}</TableCell>
-                                        <TableCell>{item.address2}</TableCell>
-                                        <TableCell>{item.address3}</TableCell>
-                                        <TableCell>{item.email}</TableCell>
-                                        <TableCell>{item.contact}</TableCell>
+                                        <TableCell>{moment(item.stockDate).format('DD/MMM/yyyy')}</TableCell>
+                                        {/* <TableCell>{item.stockDate}</TableCell> */}
+                                        <TableCell>{item.quantity}</TableCell>
+                                        <TableCell>{item.supplierName}</TableCell>
+                                        <TableCell>{item.itemName}</TableCell>
                                         <TableCell>
                                             {/*Update data*/}
                                             <Controls.Button
@@ -230,13 +258,18 @@ export default function Supplier(props) {
             <Loader/>
 
             <Popup
-                title="Supplier Form"
+                title="Stock Form"
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
-                <SupplierForm
+                <StockForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit}
+                    supplierOptions={supplierOptions}
+                    itemOptions={itemOptions}
+                    loading={loading}
+                    setLoading={setLoading}
+                    disabled={disabled}
                 />
             </Popup>
 
