@@ -58,7 +58,7 @@ export default function Customer(props) {
         console.log('useEffect')
         axios.get('http://localhost:8080/api/v1/customer/all')
         .then((function (response){
-            console.log("response.data", response.data)
+            // console.log("response.data", response.data)
             setRecords(response.data.data)
             setLoading(false);
             // return list;
@@ -90,10 +90,11 @@ export default function Customer(props) {
         if(customer.id == 0){
             axios.post('http://localhost:8080/api/v1/customer', customer)
             .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
+                // console.log("Status: ", response.status);
+                // console.log("Message: ", response);
                 setLoading(false);
-                notification(true, response.data.message, 'success');
+                let type = response.data.status == 200 ? 'success' : 'error';
+                notification(true, response.data.message, type);
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
@@ -102,10 +103,11 @@ export default function Customer(props) {
             console.log('customer ', customer);
             axios.put('http://localhost:8080/api/v1/customer/' + customer.id, customer)
             .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
+                // console.log("Status: ", response.status);
+                // console.log("Message: ", response);
                 setLoading(false);
-                notification(true, response.data.message, 'success');
+                let type = response.data.status == 200 ? 'success' : 'error';
+                notification(true, response.data.message, type);
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });

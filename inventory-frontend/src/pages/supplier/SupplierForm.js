@@ -21,12 +21,12 @@ export default function SupplierForm(props) {
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        // if('supName' in fieldValues) {
-        //     temp.supName = fieldValues.supName ? "" : "This field is required"
-        // }
-        // if('contact' in fieldValues) {
-        //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
-        // }
+        if('supName' in fieldValues) {
+            temp.supName = fieldValues.supName ? "" : "This field is required"
+        }
+        if('contact' in fieldValues) {
+            temp.contact = fieldValues.contact.length == 10 ? "" : "This field is required"
+        }
         if('email' in fieldValues) {
             temp.email = (/$^|.+@.+..+/).test(values.email) ? "" : "Email is not valid"
         }
@@ -114,6 +114,7 @@ export default function SupplierForm(props) {
                         value={values.contact}
                         onChange={handleInputChange}
                         error={errors.contact}
+                        type='number'
                     />
 
                     <Controls.Button
