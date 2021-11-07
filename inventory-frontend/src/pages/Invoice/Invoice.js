@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import CreateIcon from '@mui/icons-material/Create';
 import PeopleAltTwoToneIcon from "@mui/icons-material/PeopleAltTwoTone";
 import {ModeEditOutlined} from "@mui/icons-material";
-import DeleteIcon from '@mui/icons-material/Delete';
 import Search from "@mui/icons-material/Search"
 import AddIcon from '@mui/icons-material/Add';
 import Popup from "../../components/Popup";
 import {makeStyles} from "@mui/styles";
 import {InputAdornment, Paper, TableBody, TableCell, TableRow, Toolbar} from "@mui/material";
 import moment from 'moment';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import useTable from "../../components/useTable"
 import Controls from "../../components/controls/Controls";
 import Notification from '../../components/Notification'
@@ -17,6 +16,8 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import InvoiceForm from "./InvoiceForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
+import ViewDetail from './ViewDetail';
+
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -33,31 +34,69 @@ const useStyles = makeStyles(theme =>({
     }
 }));
 
-const headCells = [
-    {id: 'orderId', label:'Invoice'},
-    {id: 'orderDate', label:'Invoice Date'},
-    {id: 'customerName', label:'Customer Name'},
-    {id: 'amount', label:'Total Amount'},
-    {id: 'actions', label:'View Details', disableSorting: true}
-]
+// const headCells = [
+//     {id: 'orderId', label:'Invoice'},
+//     {id: 'orderDate', label:'Invoice Date'},
+//     {id: 'customerName', label:'Customer Name'},
+//     {id: 'amount', label:'Total Amount'},
+//     {id: 'actions', label:'View Details', disableSorting: true}
+// ]
 
 export default function Invoice(props) {
 
-    const {loading, setLoading} = props;
+    const {setLoading, user} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
+    const [recordForView, setRecordForView] = useState(null);
+    const [recordList, setRecordList] = useState([]);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
     const [filterFn, setFilterFn] = useState({fn: items => {return items;}})
-    const [openPopup, setOpenPopup] = useState(false);
+    const [openPopupDetail, setOpenPopupDetail] = useState(false);
+    const [openPopupAdd, setOpenPopupAdd] = useState(false);
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
     const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title:'', subTitle:''})
+    const [itemOptions, setItemOptions] = useState([]);
+    const [itemQty, setItemQty] = useState([]);
+    const [customerOptions, setCustomerOptions] = useState([]);
+
+    const headCells = [
+        {id: 'orderId', label:'Invoice'},
+        {id: 'orderDate', label:'Invoice Date'},
+        {id: 'customerName', label:'Customer Name'},
+        {id: 'amount', label:'Total Amount'},
+        {id: 'actions', label:'View Details', disableSorting: true},
+    ]
 
     useEffect(() => {
+        setLoading(true);
+        axios.get('http://localhost:8080/api/v1/customer/customer_id_name')
+        .then((function (response){
+            // console.log("customer", response.data.data)
+            setCustomerOptions(response.data.data)
+            setLoading(false);
+        }))
+
+        setLoading(true);
+        axios.get('http://localhost:8080/api/v1/item/item_id_name')
+        .then((function (response){
+            // console.log("setItemOptions", response.data.data)
+            setItemOptions(response.data.data)
+            setLoading(false);
+        }))
+
+        setLoading(true);
+        axios.get('http://localhost:8080/api/v1/item/item_id_qty')
+        .then((function (response){
+            console.log("setItemOptions", response.data.data)
+            setItemQty(response.data.data)
+            setLoading(false);
+        }))
+
         setLoading(true);
         console.log('useEffect')
         axios.get('http://localhost:8080/api/v1/order/all')
         .then((function (response){
-            console.log("response.data", response.data)
+            // console.log("response.data", response.data)
             setRecords(response.data.data)
             setLoading(false);
             // return list;
@@ -78,16 +117,15 @@ export default function Invoice(props) {
                 if(target.value == "")
                     return items;
                 else
-                    return items.filter(x => x.supName.toLowerCase().includes(target.value.toLowerCase()))
+                    return items.filter(x => x.orderId.includes(target.value))
             }
         })
     }
 
     const addOrEdit = (supplier, resetForm) => {
         setLoading(true);
-        if(supplier.id == 0){
-            // supplierService.insertSupplier(supplier);
-            axios.post('http://localhost:8080/api/v1/supplier', supplier)
+            console.log('supplier', supplier)
+            axios.post('http://localhost:8080/api/v1/order', supplier)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
@@ -96,22 +134,33 @@ export default function Invoice(props) {
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
-        }
-        else{
-            // supplierService.updateSupplier(supplier, setNotify);
-            axios.put('http://localhost:8080/api/v1/supplier/' + supplier.id, supplier)
-            .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
-                setLoading(false);
-                notification(true, response.data.message, 'success');
-            }).catch(error => {
-                console.log('Something went wrong!', error);
-            });
-        }
+        
         resetForm();
         setRecordForEdit(null);
-        setOpenPopup(false);
+        setOpenPopupAdd(false);
+    }
+
+    const addToTable = (order, resetForm) => {
+        let cusName;
+        
+        if(order.customerId){
+            cusName = customerOptions.filter( function (cus) {
+                return cus.id == order.customerId;
+            })[0].name;
+        }
+        let itemName = itemOptions.filter( function (item) {
+            return item.id == order.itemId;
+        })[0].name;
+          
+        order.id = recordList.length;
+        order.customerName = cusName;
+        order.itemName = itemName;
+
+        setRecordList([...recordList, order]);
+
+        resetForm();
+        console.log('values', order)
+        console.log('recordList', recordList)
     }
 
     const notification = (open, message, type) =>{
@@ -123,43 +172,47 @@ export default function Invoice(props) {
         })
     }
     
-    const openInPopup = item =>{
-        setRecordForEdit(item)
-        setOpenPopup(true);
+    // const openInPopup = item =>{
+    //     setRecordForEdit(item)
+    //     // setOpenPopup(true);
+    // }
+
+    const openViewDetail = item =>{
+        console.log('item', item.orderItemList);
+        setRecordForView(item.orderItemList)
+        setOpenPopupDetail(true);
     }
 
-    const onDelete = id => {
-        setConfirmDialog({
-            ...confirmDialog,
-            isOpen: false
-        })
-        setLoading(true);
+    // const onDelete = id => {
+    //     setConfirmDialog({
+    //         ...confirmDialog,
+    //         isOpen: false
+    //     })
+    //     setLoading(true);
 
-        // supplierService.deleteSupplier(id);
-        // setRecords(supplierService.getAllSuppliers());
-        axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
-        .then(response => {
-            // setLoading(false);
-            console.log("delete: ", response);
-            setLoading(false);
-            notification(true, response.data.message, 'success');
-        }).catch(error => {
-            console.log('Something went wrong!', error);
-        });
-    }
+    //     // supplierService.deleteSupplier(id);
+    //     // setRecords(supplierService.getAllSuppliers());
+    //     axios.delete('http://localhost:8080/api/v1/invoice/'+ id)
+    //     .then(response => {
+    //         // setLoading(false);
+    //         console.log("delete: ", response);
+    //         setLoading(false);
+    //         notification(true, response.data.message, 'success');
+    //     }).catch(error => {
+    //         console.log('Something went wrong!', error);
+    //     });
+    // }
 
     return (
-
-        <>
-            <PageHeader
-                title="Invoice"
-                subTitle="View/ Add / Update / Delete Invoices"
-                icon={<PeopleAltTwoToneIcon fontSize="large"/>}
-            />
-            {/*{loading ? <div>Loading....</div> :*/}
+        user.level ?
+            <>
+                <PageHeader
+                    title="Invoice"
+                    subTitle="View/ Add / Update / Delete Invoices"
+                    icon={<PeopleAltTwoToneIcon fontSize="large"/>}
+                />
+        
                 <Paper className={classes.pageContent}>
-                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
-
                     <Toolbar>
                         <Controls.Input
                             className={classes.searchInput}
@@ -171,23 +224,26 @@ export default function Invoice(props) {
                             }}
                             onChange={handleSearch}
                         />
-                        <Controls.Button
-                            className={classes.newButton}
-                            text="Add New"
-                            variant="outlined"
-                            startIcon={<AddIcon/>}
-                            onClick={() => {
-                                setOpenPopup(true);
-                                setRecordForEdit(null);
-                            }}
-                        />
+                        { user.level == 'admin' ?
+                            <Controls.Button
+                                className={classes.newButton}
+                                text="Add New"
+                                variant="outlined"
+                                startIcon={<AddIcon/>}
+                                onClick={() => {
+                                    setOpenPopupAdd(true);
+                                    setRecordForEdit(null);
+                                    setRecordList([]);
+                                }}
+                            />
+                        : null }
                     </Toolbar>
                     <TblContainer>
                         <TblHead/>
                         <TableBody>
                             {
                                 recordsAfterPagingAndSorting().map(item =>
-                                    (<TableRow>
+                                    (<TableRow key={item.orderId}>
                                         <TableCell>{item.orderId}</TableCell>
                                         <TableCell>{moment(item.orderDate).format('DD/MMM/yyyy')}</TableCell>
                                         <TableCell>{item.customerName}</TableCell>
@@ -197,10 +253,10 @@ export default function Invoice(props) {
                                             <Controls.Button
                                                 style={{marginRight: 10, paddingLeft: 20}}
                                                 size="small"
-                                                startIcon={<CreateIcon/>}
+                                                startIcon={<ViewListIcon/>}
                                                 color="primary"
                                                 onClick={() => {
-                                                    openInPopup(item)
+                                                    openViewDetail(item)
                                                 }}
                                             >
                                                 <ModeEditOutlined fontSize="small"/>
@@ -232,29 +288,45 @@ export default function Invoice(props) {
                     </TblContainer>
                     <TblPagination/>
                 </Paper>
-            {/*}*/}
+                
+                <Loader/>
 
-            <Loader/>
+                <Popup
+                    title="Invoice Details"
+                    openPopup={openPopupDetail}
+                    setOpenPopup={setOpenPopupDetail}
+                >
+                    <ViewDetail
+                        recordForView={recordForView}
+                    />
+                </Popup>
 
-            <Popup
-                title="Invoice Form"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-            >
-                <InvoiceForm
-                    recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit}
+                <Popup
+                    title="Invoice Form"
+                    openPopup={openPopupAdd}
+                    setOpenPopup={setOpenPopupAdd}
+                >
+                    <InvoiceForm
+                        recordForEdit={recordForEdit}
+                        addOrEdit={addOrEdit}
+                        recordList={recordList}
+                        setRecordList={setRecordList}
+                        customerOptions={customerOptions}
+                        itemOptions={itemOptions}
+                        addToTable={addToTable}
+                        itemQty={itemQty}
+                    />                
+                </Popup>
+
+                <Notification
+                    notify={notify}
+                    setNotify={setNotify}
                 />
-            </Popup>
-
-            <Notification
-                notify={notify}
-                setNotify={setNotify}
-            />
-            <ConfirmDialog
-                confirmDialog={confirmDialog}
-                setConfirmDialog={setConfirmDialog}
-            />
-        </>
+                <ConfirmDialog
+                    confirmDialog={confirmDialog}
+                    setConfirmDialog={setConfirmDialog}
+                />
+            </>
+        : <div><h1>User Not Found !!!</h1></div>
     );
 }

@@ -1,45 +1,87 @@
-import React, {useEffect} from 'react';
+import React, {useState} from 'react';
 import {Grid} from "@mui/material";
 import {useForm, Form} from ".././../components/useForm";
 import Controls from "../../components/controls/Controls";
+import {Paper, TableBody, TableCell, TableRow} from "@mui/material";
+import {makeStyles} from "@mui/styles";
+import useTable from "../../components/useTable"
 
 const initialFValues = {
     id: 0,
-    supName: '',
-    address1:'',
-    address2:'',
-    address3:'',
-    email:'',
-    contact:'',
-    gender:'male',
-    departmentId:'',
+    customerId: '',
+    customerName: '',
+    itemId:'',
+    itemName:'',
+    quantity:'',
+    amount:'',
+    availableQty:'',
 }
+
+const useStyles = makeStyles(theme =>({
+    pageContent: {
+        margin: 20,
+        padding: 20
+    },
+    searchInput:{
+        width:'75%'
+    },
+    newButton:{
+        position: 'absolute',
+        left: 100,
+        spacing:24
+    }
+}));
+
+const headCells = [
+    {id: 'itemName', label:'Item Name'},
+    {id: 'quantity', label:'Quantity'},
+    {id: 'amount', label:'Amount'},
+]
 
 export default function InvoiceForm(props) {
 
-    const {addOrEdit, recordForEdit} = props
+    // const classes = useStyles();
+    const {addOrEdit, addToTable, recordList, customerOptions, itemOptions, itemQty} = props
+    const [disableCustomer, setDisableCustomer] = useState(false);
+    const [disableSubmit, setDisableSubmit] = useState(true);
+    const [filterFn] = useState({fn: items => {return items;}})
+    // console.log('itemQty', itemQty)
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        if('supName' in fieldValues) {
-            temp.supName = fieldValues.supName ? "" : "This field is required"
+        
+        if(recordList.length == 0){
+            if('customerId' in fieldValues) {
+                temp.customerId = fieldValues.customerId ? "" : "This field is required"
+            }
         }
-        // if('contact' in fieldValues) {
-        //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
-        // }
-        if('email' in fieldValues) {
-            temp.email = (/$^|.+@.+..+/).test(values.email) ? "" : "Email is not valid"
+        if('itemId' in fieldValues) {
+            temp.itemId = fieldValues.itemId ? "" : "This field is required"
         }
-        // if('departmentId' in fieldValues) {
-        //     temp.departmentId = values.departmentId.length != 0 ? "" : "Thid field is required"
-        // }
+        if('quantity' in fieldValues) {
+            temp.quantity = fieldValues.quantity ? "" : "Invalid Quantity"
+        }
+        if('availableQty' in fieldValues) {
+            temp.quantity = values.quantity <= values.availableQty ? "" : "Invalid Quantityy"
+        }
+        if('amount' in fieldValues) {
+            temp.amount = fieldValues.amount ? "" : "Invalid Amount"
+        }
         setErrors({
             ...temp
         })
+        
         if(fieldValues == values) {
             return Object.values(temp).every(x => x == "")
         }
     }
+
+    const {
+        TblContainer,
+        TblHead,
+        TblPagination,
+        recordsAfterPagingAndSorting
+    } = useTable(recordList, headCells, filterFn);
 
     const {
         values,
@@ -51,79 +93,110 @@ export default function InvoiceForm(props) {
     } = useForm(initialFValues, true, validate)
 
     const handleSubmit = e =>{
-        e.preventDefault();
+        console.log('recordList', recordList)
+        addOrEdit(recordList, resetForm);
+    }
 
-        if(validate()) {
-            addOrEdit(values, resetForm);
+    const setQty = e => {
+        console.log('AAAA')
+        console.log('values', values)
+
+        if(values.itemId){
+            let qty = itemQty.filter( function (i) {
+                return i.id == values.itemId;
+            })[0].quantity;
+            values.availableQty = qty;
+            // setValues(values);
         }
     }
 
-    useEffect(() =>{
-        if(recordForEdit != null){
-            setValues({
-                ...recordForEdit
-            })
+    const addValue = e =>{
+        if(validate()){
+            addToTable(values, resetForm);
+            setDisableSubmit(false);
+            setDisableCustomer(true);
         }
-    }, [recordForEdit])
+    }
 
+    // useEffect(() =>{
+    //     if(recordForEdit != null){
+    //         setValues({
+    //             ...recordForEdit
+    //         })
+    //     }
+    // }, [recordForEdit])
+    // console.log('values.itemId', values.itemId)
     return (
+        <Paper>
         <Form onSubmit={handleSubmit}>
             <Grid container direction="row">
-                <Grid item xs={6}>
-                    <Controls.Input
-                        name="supName"
-                        label="Supplier Name"
-                        value={values.supName}
+                <Grid item xs={8}>
+                <Controls.Select
+                        name="customerId"
+                        label="Select Customer"
+                        options={customerOptions}
+                        value={recordList.length > 0 ? recordList[0].customerId : values.customerId}
                         onChange={handleInputChange}
-                        error={errors.supName}
+                        error={errors.customerId}
+                        disabled={disableCustomer}
+                        error={errors.customerId}
+                    />
+
+                    <Controls.Select
+                        name="itemId"
+                        label="Select Item"
+                        options={itemOptions}
+                        value={values.itemId}
+                        onChange={handleInputChange}
+                        error={errors.itemId}
+                        onClick={setQty()}
                     />
 
                     <Controls.Input
-                        name="address1"
-                        label="Address Line 1"
-                        value={values.address1}
+                        name="availableQty"
+                        label="Available Quantity"
+                        value={values.availableQty}
                         onChange={handleInputChange}
+                        type='number'
+                        error={errors.availableQty}
+                        disabled={true}
                     />
 
                     <Controls.Input
-                        name="address2"
-                        label="Address Line 2"
-                        value={values.address2}
+                        name="quantity"
+                        label="Quantity"
+                        value={values.quantity}
                         onChange={handleInputChange}
+                        type='number'
+                        error={errors.quantity}
                     />
 
                     <Controls.Input
-                        name="address3"
-                        label="Address Line 3"
-                        value={values.address3}
+                        name="amount"
+                        label="Amount"
+                        value={values.amount}
                         onChange={handleInputChange}
+                        type='number'
+                        error={errors.amount}
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <Controls.Input
-                        name="email"
-                        label="Email"
-                        value={values.email}
-                        onChange={handleInputChange}
-                        error={errors.email}
-                    />
-
-                    <Controls.Input
-                        name="contact"
-                        label="Contact (Number 1, Number 2, ....)"
-                        value={values.contact}
-                        onChange={handleInputChange}
-                        error={errors.contact}
-                    />
-
+                
+                <Grid item xs={4}>
                     <Controls.Button
-                        style={{marginLeft: 10}}
-                        type="submit"
+                        style={{margin: 10, marginTop:'70px', maxWidth: '60px', minWidth: '100px'}}
+                        text="Add"
+                        onClick={addValue}
+                    />
+                    <Controls.Button
+                        style={{margin: 10}}
+                        color="error"
+                        onClick={handleSubmit}
                         text="Submit"
+                        disabled={disableSubmit}
                     />
 
                     <Controls.Button
-                        style={{marginLeft: 10}}
+                        style={{margin: 10, maxWidth: '60px', minWidth: '100px'}}
                         color="inherit"
                         text="Reset"
                         onClick={resetForm}
@@ -131,6 +204,25 @@ export default function InvoiceForm(props) {
                 </Grid>
             </Grid>
         </Form>
+        {recordList.length > 0 ? 
+        <TblContainer>
+            <TblHead/>
+            <TableBody>
+                {   
+                    recordsAfterPagingAndSorting().map(item =>
+                        (<TableRow key={item.id}>
+                            <TableCell>{item.itemName}</TableCell>
+                            <TableCell>{item.quantity}</TableCell>
+                            <TableCell>{item.amount}</TableCell>
+                        </TableRow>)
+                    )
+                }
+            </TableBody>
+            </TblContainer>
+        : null }
+        {recordList.length > 0 ? <TblPagination/> : null }
+        </Paper>
+        
     );
 }
 

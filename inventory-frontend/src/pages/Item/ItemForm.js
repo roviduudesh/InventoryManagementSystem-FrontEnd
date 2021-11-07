@@ -17,18 +17,13 @@ export default function ItemForm(props) {
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        if('supName' in fieldValues) {
-            temp.supName = fieldValues.supName ? "" : "This field is required"
+        if('name' in fieldValues) {
+            temp.name = fieldValues.name ? "" : "This field is required"
         }
-        // if('contact' in fieldValues) {
-        //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
-        // }
-        if('email' in fieldValues) {
-            temp.email = (/$^|.+@.+..+/).test(values.email) ? "" : "Email is not valid"
+        if('price' in fieldValues) {
+            temp.price = fieldValues.price ? "" : "This field is required"
         }
-        // if('departmentId' in fieldValues) {
-        //     temp.departmentId = values.departmentId.length != 0 ? "" : "Thid field is required"
-        // }
+        
         setErrors({
             ...temp
         })

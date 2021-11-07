@@ -3,10 +3,11 @@ import {Button as MuiButton} from "@mui/material";
 
 export default function Button(props) {
 
-    const {text, size, color, variant, onClick, ...other} = props
+    const {text, size, color, variant, onClick, disabled, ...other} = props
 
     return (
         <MuiButton
+            disabled={disabled ? true : false}
             variant={variant || "contained"}
             size={size || "large"}
             color={color || "primary"}

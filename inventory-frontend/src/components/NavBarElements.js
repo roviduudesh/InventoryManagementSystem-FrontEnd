@@ -26,6 +26,13 @@ export const NavLink = styled(Link)`
   &.active {
     color: #15cdfc;
   }
+
+  &:hover {
+    font-weight: bold;
+    // transition: all 0.2s ease-in-out;
+    // background: red;
+    // color: red;
+  }
 `;
 
 export const Bars = styled(FaBars)`
@@ -75,22 +82,23 @@ export const NavBtn = styled.nav`
 `;
 
 export const NavBtnLink = styled(Link)`
-  border-radius: 4px;
-  background: #256ce1;
+  border-radius: 6px;
+  background: black;
   padding: 10px 22px;
-  color: #fff;
+  color: white;
   outline: none;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   text-decoration: none;
+  font-weight: bold;
 
   /* Second Nav */
   margin-left: 24px;
 
   &:hover {
     transition: all 0.2s ease-in-out;
-    background: #fff;
-    color: #010606;
+    // background: red;
+    color: red;
   }
 `;

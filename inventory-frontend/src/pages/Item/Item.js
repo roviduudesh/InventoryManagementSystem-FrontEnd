@@ -32,17 +32,17 @@ const useStyles = makeStyles(theme =>({
     }
 }));
 
-const headCells = [
-    {id: 'name', label:'Item Name'},
-    {id: 'price', label:'Item Price'},
-    {id: 'quantity', label:'Item Quantity'},
-    {id: 'warranty', label:'Item Warranty'},
-    {id: 'actions', label:'Actions', disableSorting: true}
-]
+// const headCells = [
+//     {id: 'name', label:'Item Name'},
+//     {id: 'price', label:'Item Price'},
+//     {id: 'quantity', label:'Item Quantity'},
+//     {id: 'warranty', label:'Item Warranty'},
+//     {id: 'actions', label:'Actions', disableSorting: true}
+// ]
 
 export default function Item(props) {
 
-    const {loading, setLoading} = props;
+    const {setLoading, user} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -50,6 +50,14 @@ export default function Item(props) {
     const [openPopup, setOpenPopup] = useState(false);
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
     const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title:'', subTitle:''})
+
+    const headCells = [
+        {id: 'name', label:'Item Name'},
+        {id: 'price', label:'Item Price'},
+        {id: 'quantity', label:'Item Quantity'},
+        {id: 'warranty', label:'Item Warranty'},
+        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+    ]
 
     useEffect(() => {
         setLoading(true);
@@ -83,25 +91,25 @@ export default function Item(props) {
     }
 
     const addOrEdit = (item, resetForm) => {
-        console.log('item', item)
+        // console.log('item', item)
         setLoading(true);
         if(item.id == 0){
             axios.post('http://localhost:8080/api/v1/item', item)
             .then(response => {
                 setLoading(false);
-                notification(true, response.data.message, 'success');
+                let type = response.data.status == 200 ? 'success' : 'error';
+                notification(true, response.data.message, type);
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
         }
         else{
-            console.log('AAAA')
+            // console.log('AAAA')
             axios.put('http://localhost:8080/api/v1/item/' + item.id, item)
             .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
                 setLoading(false);
-                notification(true, response.data.message, 'success');
+                let type = response.data.status == 200 ? 'success' : 'error';
+                notification(true, response.data.message, type);
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
@@ -130,127 +138,127 @@ export default function Item(props) {
             isOpen: false
         })
         setLoading(true);
-
-        // supplierService.deleteSupplier(id);
-        // setRecords(supplierService.getAllSuppliers());
         axios.delete('http://localhost:8080/api/v1/item/'+ id)
         .then(response => {
-            // setLoading(false);
-            console.log("delete: ", response);
             setLoading(false);
-            notification(true, response.data.message, 'success');
+            let type = response.data.status == 200 ? 'success' : 'error';
+            notification(true, response.data.message, type);
         }).catch(error => {
             console.log('Something went wrong!', error);
         });
     }
 
     return (
-
-        <>
-            <PageHeader
-                title="Item"
-                subTitle="View/ Add / Update / Delete Items"
-                icon={<AppRegistrationIcon fontSize="large"/>}
-            />
-            {/*{loading ? <div>Loading....</div> :*/}
-                <Paper className={classes.pageContent}>
-                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
-
-                    <Toolbar>
-                        <Controls.Input
-                            className={classes.searchInput}
-                            label="Search Items"
-                            InputProps={{
-                                startAdornment: (<InputAdornment position='start'>
-                                    <Search/>
-                                </InputAdornment>)
-                            }}
-                            onChange={handleSearch}
-                        />
-                        <Controls.Button
-                            className={classes.newButton}
-                            text="Add New"
-                            variant="outlined"
-                            startIcon={<AddIcon/>}
-                            onClick={() => {
-                                setOpenPopup(true);
-                                setRecordForEdit(null);
-                            }}
-                        />
-                    </Toolbar>
-                    <TblContainer>
-                        <TblHead/>
-                        <TableBody>
-                            {
-                                recordsAfterPagingAndSorting().map(item =>
-                                    (<TableRow>
-                                        <TableCell>{item.name}</TableCell>
-                                        <TableCell>{item.price}</TableCell>
-                                        <TableCell>{item.quantity}</TableCell>
-                                        <TableCell>{item.warranty}</TableCell>
-                                        <TableCell>
-                                            {/*Update data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<CreateIcon/>}
-                                                color="primary"
-                                                onClick={() => {
-                                                    openInPopup(item)
-                                                }}
-                                            >
-                                                <ModeEditOutlined fontSize="small"/>
-                                            </Controls.Button>
-
-                                            {/*Delete data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<DeleteIcon/>}
-                                                color="error"
-                                                onClick={() => {
-                                                    setConfirmDialog({
-                                                        isOpen: true,
-                                                        title: 'Are you sure to delete this record ?',
-                                                        subTitle: "You can' t undo this operation",
-                                                        onConfirm: () => {
-                                                            onDelete(item.id)
-                                                        }
-                                                    })
-                                                }}>
-                                                <DeleteIcon fontSize="small"/>
-                                            </Controls.Button>
-                                        </TableCell>
-                                    </TableRow>)
-                                )
-                            }
-                        </TableBody>
-                    </TblContainer>
-                    <TblPagination/>
-                </Paper>
-            {/*}*/}
-
-            <Loader/>
-
-            <Popup
-                title="Item Form"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-            >
-                <ItemForm
-                    recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit}
+        user.level ?
+            <>
+                <PageHeader
+                    title="Item"
+                    subTitle="View/ Add / Update / Delete Items"
+                    icon={<AppRegistrationIcon fontSize="large"/>}
                 />
-            </Popup>
+                {/*{loading ? <div>Loading....</div> :*/}
+                    <Paper className={classes.pageContent}>
+                        {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
 
-            <Notification
-                notify={notify}
-                setNotify={setNotify}
-            />
-            <ConfirmDialog
-                confirmDialog={confirmDialog}
-                setConfirmDialog={setConfirmDialog}
-            />
-        </>
+                        <Toolbar>
+                            <Controls.Input
+                                className={classes.searchInput}
+                                label="Search Items"
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position='start'>
+                                        <Search/>
+                                    </InputAdornment>)
+                                }}
+                                onChange={handleSearch}
+                            />
+                            {user.level == 'admin' ?
+                            <Controls.Button
+                                className={classes.newButton}
+                                text="Add New"
+                                variant="outlined"
+                                startIcon={<AddIcon/>}
+                                onClick={() => {
+                                    setOpenPopup(true);
+                                    setRecordForEdit(null);
+                                }}
+                            /> : null }
+                        </Toolbar>
+                        <TblContainer>
+                            <TblHead/>
+                            <TableBody>
+                                {
+                                    recordsAfterPagingAndSorting().map(item =>
+                                        (<TableRow key={item.id}>
+                                            <TableCell>{item.name}</TableCell>
+                                            <TableCell>{item.price}</TableCell>
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>{item.warranty}</TableCell>
+                                            {user.level == 'admin' ?
+                                                <TableCell>
+                                                    {/*Update data*/}
+                                                    <Controls.Button
+                                                        style={{marginRight: 10, paddingLeft: 20}}
+                                                        size="small"
+                                                        startIcon={<CreateIcon/>}
+                                                        color="primary"
+                                                        onClick={() => {
+                                                            openInPopup(item)
+                                                        }}
+                                                    >
+                                                        <ModeEditOutlined fontSize="small"/>
+                                                    </Controls.Button>
+
+                                                    {/*Delete data*/}
+                                                    <Controls.Button
+                                                        style={{marginRight: 10, paddingLeft: 20}}
+                                                        size="small"
+                                                        startIcon={<DeleteIcon/>}
+                                                        color="error"
+                                                        onClick={() => {
+                                                            setConfirmDialog({
+                                                                isOpen: true,
+                                                                title: 'Are you sure to delete this record ?',
+                                                                subTitle: "You can' t undo this operation",
+                                                                onConfirm: () => {
+                                                                    onDelete(item.id)
+                                                                }
+                                                            })
+                                                        }}>
+                                                        <DeleteIcon fontSize="small"/>
+                                                    </Controls.Button>
+                                                </TableCell> 
+                                            : null }
+                                        </TableRow>)
+                                    )
+                                }
+                            </TableBody>
+                        </TblContainer>
+                        <TblPagination/>
+                    </Paper>
+                {/*}*/}
+
+                <Loader/>
+
+                <Popup
+                    title="Item Form"
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                >
+                    <ItemForm
+                        recordForEdit={recordForEdit}
+                        addOrEdit={addOrEdit}
+                    />
+                </Popup>
+
+                <Notification
+                    notify={notify}
+                    setNotify={setNotify}
+                />
+                <ConfirmDialog
+                    confirmDialog={confirmDialog}
+                    setConfirmDialog={setConfirmDialog}
+                />
+            </>
+        : <div><h1>User Not Found !!!</h1></div>
     );
 }

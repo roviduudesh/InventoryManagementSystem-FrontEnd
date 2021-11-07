@@ -1,8 +1,6 @@
 import React, {useState} from "react";
 import './App.css';
-import SideMenu from "../components/SideMenu";
 import {makeStyles} from "@mui/styles";
-import Header from "../components/Header";
 import {CssBaseline} from "@material-ui/core";
 import Supplier from "../pages/supplier/Supplier";
 import Customer from "../pages/customer/Customer";
@@ -12,6 +10,8 @@ import Invoice from "../pages/Invoice/Invoice";
 import NavBar from "../components/NavBar";
 import Loader from "../components/Loader";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import LoginForm from "../pages/Login/LoginForm";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
     appMain: {
@@ -23,6 +23,8 @@ const useStyles = makeStyles({
 function App() {
     const classes = useStyles();
     const[loading, setLoading] = useState(false);
+    const[user, setUser] = useState({});
+    
   return (
       <>
         {/* <SideMenu/> */}
@@ -31,32 +33,55 @@ function App() {
         />
         <div className={classes.appMain}>
         <Router>
-            <NavBar/>
+            
                 <Switch>
+                
+                    <Route path='/' exact>
+                        <LoginForm
+                        setLoading = {setLoading}
+                        setUser = {setUser}
+                        />
+                    </Route>
                     <Route path='/supplier'>
+                        <NavBar/>
                         <Supplier
                             setLoading = {setLoading}
+                            user = {user}
                             // loading = {loading}
                         />
                     </Route>
                     <Route path='/customer'>
+                        <NavBar/>
                         <Customer
                             setLoading = {setLoading}
+                            user = {user}
                         />
                     </Route>
                     <Route path='/item'>
+                        <NavBar/>
                         <Item
                             setLoading = {setLoading}
+                            user = {user}
                         />
                     </Route>
                     <Route path='/stock'>
+                        <NavBar/>
                         <Stock
                             setLoading = {setLoading}
+                            user = {user}
                         />
                     </Route>
                     <Route path='/invoice'>
+                        <NavBar/>
                         <Invoice
                             setLoading = {setLoading}
+                            user = {user}
+                        />
+                    </Route>
+                    <Route path='/logout'>
+                        <LoginForm
+                            setLoading = {setLoading}
+                            setUser = {setUser}
                         />
                     </Route>
                 </Switch>

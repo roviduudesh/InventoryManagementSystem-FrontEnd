@@ -47,8 +47,9 @@ export default function UseTable(records, headCells, filterFn) {
             <TableRow>
                 {
                     headCells.map(headCell => (
-                        <TableCell key = {headCell.id}
-                        sortDirection={orderBy === headCell.id ? order : false}>
+                        headCell ?
+                        <TableCell  key = {headCell.id}
+                                    sortDirection={orderBy === headCell.id ? order : false}>
                             {headCell.disableSorting ? headCell.label :
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -56,7 +57,8 @@ export default function UseTable(records, headCells, filterFn) {
                             onClick = {() => {handleSortRequest(headCell.id)}}>
                             {headCell.label}
                         </TableSortLabel> }
-                    </TableCell>))
+                    </TableCell> : null
+                    ))
                 }
             </TableRow>
         </TableHead>)

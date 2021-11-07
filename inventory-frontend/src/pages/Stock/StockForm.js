@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import {Grid} from "@mui/material";
 import {useForm, Form} from "../../components/useForm";
 import Controls from "../../components/controls/Controls";
-import moment from 'moment';
 
 const initialFValues = {
     id: 0,
@@ -20,15 +19,18 @@ export default function StockForm(props) {
     const {addOrEdit, recordForEdit, supplierOptions, itemOptions, disabled} = props
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        // if('stockDate' in fieldValues) {
-        //     temp.stockDate = fieldValues.stockDate ? "" : "This field is required"
-        // }
-        // if('contact' in fieldValues) {
-        //     temp.contact = fieldValues.contact.length >= 10 ? "" : "This field is required"
-        // }
-        // if('departmentId' in fieldValues) {
-        //     temp.departmentId = values.departmentId.length != 0 ? "" : "Thid field is required"
-        // }
+        if('stockDate' in fieldValues) {
+            temp.stockDate = fieldValues.stockDate ? "" : "This field is required"
+        }
+        if('quantity' in fieldValues) {
+            temp.quantity = fieldValues.quantity ? "" : "This field is required"
+        }
+        if('supplierId' in fieldValues) {
+            temp.supplierId = fieldValues.supplierId ? "" : "This field is required"
+        }
+        if('itemId' in fieldValues) {
+            temp.itemId = fieldValues.itemId ? "" : "This field is required"
+        }
         setErrors({
             ...temp
         })

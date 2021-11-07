@@ -13,7 +13,7 @@ export default function Input(props) {
             label={label}
             value={value}
             onChange={onChange}
-            type={type ? 'number' : 'text'}
+            type={type == 'password' ? 'password' : type == 'number' ? 'number' : 'text'}
             {...other}
             {...(error && {error:true, helperText:error})}
         />

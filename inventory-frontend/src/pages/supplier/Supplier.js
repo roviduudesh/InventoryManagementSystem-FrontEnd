@@ -32,19 +32,19 @@ const useStyles = makeStyles(theme =>({
     }
 }));
 
-const headCells = [
-    {id: 'supName', label:'Supplier Name'},
-    {id: 'address1', label:'Address Line 1'},
-    {id: 'address2', label:'Address Line 2'},
-    {id: 'address3', label:'Address Line 3'},
-    {id: 'email', label:'Email'},
-    {id: 'contact', label:'Contact Numbers', disableSorting: true},
-    {id: 'actions', label:'Actions', disableSorting: true}
-]
+// const headCells = [
+//     {id: 'supName', label:'Supplier Name'},
+//     {id: 'address1', label:'Address Line 1'},
+//     {id: 'address2', label:'Address Line 2'},
+//     {id: 'address3', label:'Address Line 3'},
+//     {id: 'email', label:'Email'},
+//     {id: 'contact', label:'Contact Numbers', disableSorting: true},
+//     {id: 'actions', label:'Actions', disableSorting: true}
+// ]
 
 export default function Supplier(props) {
 
-    const {loading, setLoading} = props;
+    const {setLoading, user} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -53,6 +53,18 @@ export default function Supplier(props) {
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
     const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title:'', subTitle:''})
 
+    console.log('user', user)
+
+    const headCells = [
+        {id: 'supName', label:'Supplier Name'},
+        {id: 'address1', label:'Address Line 1'},
+        {id: 'address2', label:'Address Line 2'},
+        {id: 'address3', label:'Address Line 3'},
+        {id: 'email', label:'Email'},
+        {id: 'contact', label:'Contact Numbers', disableSorting: true},
+        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+    ]
+    
     useEffect(() => {
         setLoading(true);
         console.log('useEffect')
@@ -144,6 +156,7 @@ export default function Supplier(props) {
     }
 
     return (
+        user.level ? 
         <>
             <PageHeader
                 title="Supplier"
@@ -162,6 +175,7 @@ export default function Supplier(props) {
                             }}
                             onChange={handleSearch}
                         />
+                        {user.level == 'admin' ? 
                         <Controls.Button
                             className={classes.newButton}
                             text="Add New"
@@ -171,7 +185,7 @@ export default function Supplier(props) {
                                 setOpenPopup(true);
                                 setRecordForEdit(null);
                             }}
-                        />
+                        /> : null }
                     </Toolbar>
                     <TblContainer>
                         <TblHead/>
@@ -185,39 +199,41 @@ export default function Supplier(props) {
                                         <TableCell>{item.address3}</TableCell>
                                         <TableCell>{item.email}</TableCell>
                                         <TableCell>{item.contact}</TableCell>
-                                        <TableCell>
-                                            {/*Update data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<CreateIcon/>}
-                                                color="primary"
-                                                onClick={() => {
-                                                    openInPopup(item)
-                                                }}
-                                            >
-                                                <ModeEditOutlined fontSize="small"/>
-                                            </Controls.Button>
+                                        {user.level == 'admin' ?
+                                            <TableCell>
+                                                {/*Update data*/}
+                                                <Controls.Button
+                                                    style={{marginRight: 10, paddingLeft: 20}}
+                                                    size="small"
+                                                    startIcon={<CreateIcon/>}
+                                                    color="primary"
+                                                    onClick={() => {
+                                                        openInPopup(item)
+                                                    }}
+                                                >
+                                                    <ModeEditOutlined fontSize="small"/>
+                                                </Controls.Button>
 
-                                            {/*Delete data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<DeleteIcon/>}
-                                                color="error"
-                                                onClick={() => {
-                                                    setConfirmDialog({
-                                                        isOpen: true,
-                                                        title: 'Are you sure to delete this record ?',
-                                                        subTitle: "You can' t undo this operation",
-                                                        onConfirm: () => {
-                                                            onDelete(item.id)
-                                                        }
-                                                    })
-                                                }}>
-                                                <DeleteIcon fontSize="small"/>
-                                            </Controls.Button>
-                                        </TableCell>
+                                                {/*Delete data*/}
+                                                <Controls.Button
+                                                    style={{marginRight: 10, paddingLeft: 20}}
+                                                    size="small"
+                                                    startIcon={<DeleteIcon/>}
+                                                    color="error"
+                                                    onClick={() => {
+                                                        setConfirmDialog({
+                                                            isOpen: true,
+                                                            title: 'Are you sure to delete this record ?',
+                                                            subTitle: "You can' t undo this operation",
+                                                            onConfirm: () => {
+                                                                onDelete(item.id)
+                                                            }
+                                                        })
+                                                    }}>
+                                                    <DeleteIcon fontSize="small"/>
+                                                </Controls.Button>
+                                            </TableCell>
+                                        : null}
                                     </TableRow>)
                                 )
                             }
@@ -248,6 +264,7 @@ export default function Supplier(props) {
                 confirmDialog={confirmDialog}
                 setConfirmDialog={setConfirmDialog}
             />
-        </>
+        </> 
+        : <div><h1>User Not Found !!!</h1></div>
     );
 }

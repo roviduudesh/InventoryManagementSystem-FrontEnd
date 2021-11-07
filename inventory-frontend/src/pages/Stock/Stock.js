@@ -33,18 +33,18 @@ const useStyles = makeStyles(theme =>({
     }
 }));
 
-const headCells = [
-    {id: 'stockDate', label:'Stock Date'},
-    {id: 'quantity', label:'Stock Quantity'},
-    {id: 'supplier', label:'Supplier'},
-    {id: 'item', label:'Item Name'},
-    {id: 'actions', label:'Actions', disableSorting: true}
-]
+// const headCells = [
+//     {id: 'stockDate', label:'Stock Date'},
+//     {id: 'quantity', label:'Stock Quantity'},
+//     {id: 'supplier', label:'Supplier'},
+//     {id: 'item', label:'Item Name'},
+//     {id: 'actions', label:'Actions', disableSorting: true}
+// ]
 
 export default function Stock(props) {
 
     const [disabled, setDisabled] = useState(false);
-    const {loading, setLoading} = props;
+    const {setLoading, user} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -55,11 +55,19 @@ export default function Stock(props) {
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
     const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title:'', subTitle:''})
 
+    const headCells = [
+        {id: 'stockDate', label:'Stock Date'},
+        {id: 'quantity', label:'Stock Quantity'},
+        {id: 'supplier', label:'Supplier'},
+        {id: 'item', label:'Item Name'},
+        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+    ]
+
     useEffect(() => {
         console.log('useEffect')
 
         setLoading(true);
-        axios.get('http://localhost:8080/api/v1/supplier/stock_supplier')
+        axios.get('http://localhost:8080/api/v1/supplier/supplier_id_name')
         .then((function (response){
             // console.log("setSupplierOptions", response.data.data)
             setSupplierOptions(response.data.data)
@@ -67,7 +75,7 @@ export default function Stock(props) {
         }))
 
         setLoading(true);
-        axios.get('http://localhost:8080/api/v1/item/stock_item')
+        axios.get('http://localhost:8080/api/v1/item/item_id_name')
         .then((function (response){
             // console.log("setItemOptions", response.data.data)
             setItemOptions(response.data.data)
@@ -91,13 +99,14 @@ export default function Stock(props) {
     } = useTable(records, headCells, filterFn);
 
     const handleSearch = e => {
-        let target = e.target;
+        let target = e.target;        
         setFilterFn({
             fn: items => {
                 if(target.value == "")
                     return items;
-                else
-                    return items.filter(x => x.stockDate.toLowerCase().includes(target.value.toLowerCase()))
+                else{
+                    return items.filter(x => (moment(x.stockDate).format('DD/MMM/yyyy')).toLowerCase().includes(target.value.toLowerCase()))
+                }
             }
         })
     }
@@ -108,22 +117,19 @@ export default function Stock(props) {
         if(stock.id == 0){
             axios.post('http://localhost:8080/api/v1/stock', stock)
             .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
                 setLoading(false);
-                notification(true, response.data.message, 'success');
+                let type = response.data.status == 200 ? 'success' : 'error';
+                notification(true, response.data.message, type);
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
         }
         else{
-            console.log('stock', stock)
             axios.put('http://localhost:8080/api/v1/stock/' + stock.id, stock)
             .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
                 setLoading(false);
-                notification(true, response.data.message, 'success');
+                let type = response.data.status == 200 ? 'success' : 'error';
+                notification(true, response.data.message, type);
             }).catch(error => {
                 console.log('Something went wrong!', error);
             });
@@ -135,7 +141,6 @@ export default function Stock(props) {
     }
 
     const notification = (open, message, type) =>{
-        // console.log('AAAAAAAA')
         setNotify({
             isOpen: open,
             message: message,
@@ -158,129 +163,130 @@ export default function Stock(props) {
 
         axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
         .then(response => {
-            // setLoading(false);
-            // console.log("delete: ", response);
             setLoading(false);
-            notification(true, response.data.message, 'success');
+            let type = response.data.status == 200 ? 'success' : 'error';
+            notification(true, response.data.message, type);
         }).catch(error => {
             console.log('Something went wrong!', error);
         });
     }
 
     return (
-
-        <>
-            <PageHeader
-                title="Stock"
-                subTitle="View/ Add / Update / Delete Stocks"
-                icon={<PeopleAltTwoToneIcon fontSize="large"/>}
-            />
-            {/*{loading ? <div>Loading....</div> :*/}
-                <Paper className={classes.pageContent}>
-                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
-
-                    <Toolbar>
-                        <Controls.Input
-                            className={classes.searchInput}
-                            label="Search Suppliers"
-                            InputProps={{
-                                startAdornment: (<InputAdornment position='start'>
-                                    <Search/>
-                                </InputAdornment>)
-                            }}
-                            onChange={handleSearch}
-                        />
-                        <Controls.Button
-                            className={classes.newButton}
-                            text="Add New"
-                            variant="outlined"
-                            startIcon={<AddIcon/>}
-                            onClick={() => {
-                                setOpenPopup(true);
-                                setRecordForEdit(null);
-                                setDisabled(false);
-                            }}
-                        />
-                    </Toolbar>
-                    <TblContainer>
-                        <TblHead/>
-                        <TableBody>
-                            {
-                                recordsAfterPagingAndSorting().map(item =>
-                                    (<TableRow key={item.id}>
-                                        <TableCell>{moment(item.stockDate).format('DD/MMM/yyyy')}</TableCell>
-                                        {/* <TableCell>{item.stockDate}</TableCell> */}
-                                        <TableCell>{item.quantity}</TableCell>
-                                        <TableCell>{item.supplierName}</TableCell>
-                                        <TableCell>{item.itemName}</TableCell>
-                                        <TableCell>
-                                            {/*Update data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<CreateIcon/>}
-                                                color="primary"
-                                                onClick={() => {
-                                                    openInPopup(item)
-                                                }}
-                                            >
-                                                <ModeEditOutlined fontSize="small"/>
-                                            </Controls.Button>
-
-                                            {/*Delete data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<DeleteIcon/>}
-                                                color="error"
-                                                onClick={() => {
-                                                    setConfirmDialog({
-                                                        isOpen: true,
-                                                        title: 'Are you sure to delete this record ?',
-                                                        subTitle: "You can' t undo this operation",
-                                                        onConfirm: () => {
-                                                            onDelete(item.id)
-                                                        }
-                                                    })
-                                                }}>
-                                                <DeleteIcon fontSize="small"/>
-                                            </Controls.Button>
-                                        </TableCell>
-                                    </TableRow>)
-                                )
-                            }
-                        </TableBody>
-                    </TblContainer>
-                    <TblPagination/>
-                </Paper>
-            {/*}*/}
-
-            <Loader/>
-
-            <Popup
-                title="Stock Form"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-            >
-                <StockForm
-                    recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit}
-                    supplierOptions={supplierOptions}
-                    itemOptions={itemOptions}
-                    loading={loading}
-                    setLoading={setLoading}
-                    disabled={disabled}
+        user.level ?
+            <>
+                <PageHeader
+                    title="Stock"
+                    subTitle="View/ Add / Update / Delete Stocks"
+                    icon={<PeopleAltTwoToneIcon fontSize="large"/>}
                 />
-            </Popup>
+                    <Paper className={classes.pageContent}>
+                        {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
 
-            <Notification
-                notify={notify}
-                setNotify={setNotify}
-            />
-            <ConfirmDialog
-                confirmDialog={confirmDialog}
-                setConfirmDialog={setConfirmDialog}
-            />
-        </>
+                        <Toolbar>
+                            <Controls.Input
+                                className={classes.searchInput}
+                                label="Search Stocks"
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position='start'>
+                                        <Search/>
+                                    </InputAdornment>)
+                                }}
+                                onChange={handleSearch}
+                            />
+                            {user.level == 'admin' ?
+                            <Controls.Button
+                                className={classes.newButton}
+                                text="Add New"
+                                variant="outlined"
+                                startIcon={<AddIcon/>}
+                                onClick={() => {
+                                    setOpenPopup(true);
+                                    setRecordForEdit(null);
+                                    setDisabled(false);
+                                }}
+                            /> : null }
+                        </Toolbar>
+                        <TblContainer>
+                            <TblHead/>
+                            <TableBody>
+                                {
+                                    recordsAfterPagingAndSorting().map(item =>
+                                        (<TableRow key={item.id}>
+                                            <TableCell>{moment(item.stockDate).format('DD/MMM/yyyy')}</TableCell>
+                                            {/* <TableCell>{item.stockDate}</TableCell> */}
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>{item.supplierName}</TableCell>
+                                            <TableCell>{item.itemName}</TableCell>
+                                            {user.level == 'admin' ?
+                                                <TableCell>
+                                                    {/*Update data*/}
+                                                    <Controls.Button
+                                                        style={{marginRight: 10, paddingLeft: 20}}
+                                                        size="small"
+                                                        startIcon={<CreateIcon/>}
+                                                        color="primary"
+                                                        onClick={() => {
+                                                            openInPopup(item)
+                                                        }}
+                                                    >
+                                                        <ModeEditOutlined fontSize="small"/>
+                                                    </Controls.Button>
+
+                                                    {/*Delete data*/}
+                                                    <Controls.Button
+                                                        style={{marginRight: 10, paddingLeft: 20}}
+                                                        size="small"
+                                                        startIcon={<DeleteIcon/>}
+                                                        color="error"
+                                                        onClick={() => {
+                                                            setConfirmDialog({
+                                                                isOpen: true,
+                                                                title: 'Are you sure to delete this record ?',
+                                                                subTitle: "You can' t undo this operation",
+                                                                onConfirm: () => {
+                                                                    onDelete(item.id)
+                                                                }
+                                                            })
+                                                        }}>
+                                                        <DeleteIcon fontSize="small"/>
+                                                    </Controls.Button>
+                                                </TableCell>
+                                            : null }
+                                        </TableRow>)
+                                    )
+                                }
+                            </TableBody>
+                        </TblContainer>
+                        <TblPagination/>
+                    </Paper>
+                {/*}*/}
+
+                <Loader/>
+
+                <Popup
+                    title="Stock Form"
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                >
+                    <StockForm
+                        recordForEdit={recordForEdit}
+                        addOrEdit={addOrEdit}
+                        supplierOptions={supplierOptions}
+                        itemOptions={itemOptions}
+                        setLoading={setLoading}
+                        disabled={disabled}
+                    />
+                </Popup>
+
+                <Notification
+                    notify={notify}
+                    setNotify={setNotify}
+                />
+                <ConfirmDialog
+                    confirmDialog={confirmDialog}
+                    setConfirmDialog={setConfirmDialog}
+                />
+            </>
+        : <div><h1>User Not Found !!!</h1></div>
     );
 }

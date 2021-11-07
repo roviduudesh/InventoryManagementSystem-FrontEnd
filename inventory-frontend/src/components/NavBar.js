@@ -4,8 +4,7 @@ import {
   NavLink,
   Bars,
   NavMenu,
-  NavBtn,
-  NavBtnLink
+  NavBtnLink,
 } from './NavBarElements';
 
 const Navbar = () => {
@@ -34,7 +33,7 @@ const Navbar = () => {
             Invoices
           </NavLink>
           {/* Second Nav */}
-          {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
+          <NavBtnLink to='/logout'>Logout</NavBtnLink>
         </NavMenu>
         
       </Nav>

@@ -31,20 +31,20 @@ const useStyles = makeStyles(theme =>({
     }
 }));
 
-const headCells = [
-    {id: 'firstName', label:'First Name'},
-    {id: 'lastName', label:'Last Name'},
-    {id: 'address1', label:'Address Line 1'},
-    {id: 'address2', label:'Address Line 2'},
-    {id: 'address3', label:'Address Line 3'},
-    {id: 'email', label:'Email'},
-    {id: 'contact', label:'Contact Numbers', disableSorting: true},
-    {id: 'actions', label:'Actions', disableSorting: true}
-]
+// const headCells = [
+//     {id: 'firstName', label:'First Name'},
+//     {id: 'lastName', label:'Last Name'},
+//     {id: 'address1', label:'Address Line 1'},
+//     {id: 'address2', label:'Address Line 2'},
+//     {id: 'address3', label:'Address Line 3'},
+//     {id: 'email', label:'Email'},
+//     {id: 'contact', label:'Contact Numbers', disableSorting: true},
+//     {id: 'actions', label:'Actions', disableSorting: true}
+// ]
 
 export default function Customer(props) {
 
-    const {loading, setLoading} = props;
+    const {setLoading, user} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -52,6 +52,17 @@ export default function Customer(props) {
     const [openPopup, setOpenPopup] = useState(false);
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
     const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title:'', subTitle:''})
+
+    const headCells = [
+        {id: 'firstName', label:'First Name'},
+        {id: 'lastName', label:'Last Name'},
+        {id: 'address1', label:'Address Line 1'},
+        {id: 'address2', label:'Address Line 2'},
+        {id: 'address3', label:'Address Line 3'},
+        {id: 'email', label:'Email'},
+        {id: 'contact', label:'Contact Numbers', disableSorting: true},
+        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+    ]
 
     useEffect(() => {
         setLoading(true);
@@ -65,7 +76,6 @@ export default function Customer(props) {
         }))
     }, [notify]);
    
-
     const {
         TblContainer,
         TblHead,
@@ -149,114 +159,117 @@ export default function Customer(props) {
     }
 
     return (
-
-        <>
-
-            <PageHeader
-                title="Customer"
-                subTitle="View/ Add / Update / Delete Customers"
-                icon={<PeopleAltTwoToneIcon fontSize="large"/>}
-            />
-            {/*{loading ? <div>Loading....</div> :*/}
-                <Paper className={classes.pageContent}>
-                    {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
-
-                    <Toolbar>
-                        <Controls.Input
-                            className={classes.searchInput}
-                            label="Search Customers"
-                            InputProps={{
-                                startAdornment: (<InputAdornment position='start'>
-                                    <Search/>
-                                </InputAdornment>)
-                            }}
-                            onChange={handleSearch}
-                        />
-                        <Controls.Button
-                            className={classes.newButton}
-                            text="Add New"
-                            variant="outlined"
-                            startIcon={<AddIcon/>}
-                            onClick={() => {
-                                setOpenPopup(true);
-                                setRecordForEdit(null);
-                            }}
-                        />
-                    </Toolbar>
-                    <TblContainer>
-                        <TblHead/>
-                        <TableBody>
-                            {
-                                recordsAfterPagingAndSorting().map(item =>
-                                    (<TableRow key={item.id}>
-                                        <TableCell>{item.firstName}</TableCell>
-                                        <TableCell>{item.lastName}</TableCell>
-                                        <TableCell>{item.address1}</TableCell>
-                                        <TableCell>{item.address2}</TableCell>
-                                        <TableCell>{item.address3}</TableCell>
-                                        <TableCell>{item.email}</TableCell>
-                                        <TableCell>{item.contact}</TableCell>
-                                        <TableCell>
-                                            {/*Update data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<CreateIcon/>}
-                                                color="primary"
-                                                onClick={() => {
-                                                    openInPopup(item)
-                                                }}
-                                            >
-                                                <ModeEditOutlined fontSize="small"/>
-                                            </Controls.Button>
-
-                                            {/*Delete data*/}
-                                            <Controls.Button
-                                                style={{marginRight: 10, paddingLeft: 20}}
-                                                size="small"
-                                                startIcon={<DeleteIcon/>}
-                                                color="error"
-                                                onClick={() => {
-                                                    setConfirmDialog({
-                                                        isOpen: true,
-                                                        title: 'Are you sure to delete this record ?',
-                                                        subTitle: "You can' t undo this operation",
-                                                        onConfirm: () => {
-                                                            onDelete(item.id)
-                                                        }
-                                                    })
-                                                }}>
-                                                <DeleteIcon fontSize="small"/>
-                                            </Controls.Button>
-                                        </TableCell>
-                                    </TableRow>)
-                                )
-                            }
-                        </TableBody>
-                    </TblContainer>
-                    <TblPagination/>
-                </Paper>
-            {/*}*/}
-
-            <Popup
-                title="Customer Form"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-            >
-                <CustomerForm
-                    recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit}
+        user.level ? 
+            <>
+                <PageHeader
+                    title="Customer"
+                    subTitle="View/ Add / Update / Delete Customers"
+                    icon={<PeopleAltTwoToneIcon fontSize="large"/>}
                 />
-            </Popup>
+                {/*{loading ? <div>Loading....</div> :*/}
+                    <Paper className={classes.pageContent}>
+                        {/*<Paper style={{margin: 'auto', padding: 20, width: '60%'}}>*/}
 
-            <Notification
-                notify={notify}
-                setNotify={setNotify}
-            />
-            <ConfirmDialog
-                confirmDialog={confirmDialog}
-                setConfirmDialog={setConfirmDialog}
-            />
-        </>
+                        <Toolbar>
+                            <Controls.Input
+                                className={classes.searchInput}
+                                label="Search Customers"
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position='start'>
+                                        <Search/>
+                                    </InputAdornment>)
+                                }}
+                                onChange={handleSearch}
+                            />
+                            {user.level == 'admin' ? 
+                            <Controls.Button
+                                className={classes.newButton}
+                                text="Add New"
+                                variant="outlined"
+                                startIcon={<AddIcon/>}
+                                onClick={() => {
+                                    setOpenPopup(true);
+                                    setRecordForEdit(null);
+                                }}
+                            /> : null }
+                        </Toolbar>
+                        <TblContainer>
+                            <TblHead/>
+                            <TableBody>
+                                {
+                                    recordsAfterPagingAndSorting().map(item =>
+                                        (<TableRow key={item.id}>
+                                            <TableCell>{item.firstName}</TableCell>
+                                            <TableCell>{item.lastName}</TableCell>
+                                            <TableCell>{item.address1}</TableCell>
+                                            <TableCell>{item.address2}</TableCell>
+                                            <TableCell>{item.address3}</TableCell>
+                                            <TableCell>{item.email}</TableCell>
+                                            <TableCell>{item.contact}</TableCell>
+                                            {user.level == 'admin' ?
+                                                <TableCell>
+                                                    {/*Update data*/}
+                                                    <Controls.Button
+                                                        style={{marginRight: 10, paddingLeft: 20}}
+                                                        size="small"
+                                                        startIcon={<CreateIcon/>}
+                                                        color="primary"
+                                                        onClick={() => {
+                                                            openInPopup(item)
+                                                        }}
+                                                    >
+                                                        <ModeEditOutlined fontSize="small"/>
+                                                    </Controls.Button>
+
+                                                    {/*Delete data*/}
+                                                    <Controls.Button
+                                                        style={{marginRight: 10, paddingLeft: 20}}
+                                                        size="small"
+                                                        startIcon={<DeleteIcon/>}
+                                                        color="error"
+                                                        onClick={() => {
+                                                            setConfirmDialog({
+                                                                isOpen: true,
+                                                                title: 'Are you sure to delete this record ?',
+                                                                subTitle: "You can' t undo this operation",
+                                                                onConfirm: () => {
+                                                                    onDelete(item.id)
+                                                                }
+                                                            })
+                                                        }}>
+                                                        <DeleteIcon fontSize="small"/>
+                                                    </Controls.Button>
+                                                </TableCell> 
+                                            : null }
+                                        </TableRow>)
+                                    )
+                                }
+                            </TableBody>
+                        </TblContainer>
+                        <TblPagination/>
+                    </Paper>
+                {/*}*/}
+
+                <Popup
+                    title="Customer Form"
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                >
+                    <CustomerForm
+                        recordForEdit={recordForEdit}
+                        addOrEdit={addOrEdit}
+                    />
+                </Popup>
+
+                <Notification
+                    notify={notify}
+                    setNotify={setNotify}
+                />
+                <ConfirmDialog
+                    confirmDialog={confirmDialog}
+                    setConfirmDialog={setConfirmDialog}
+                />
+            </>
+        : <div><h1>User Not Found !!!</h1></div>
     );
 }
