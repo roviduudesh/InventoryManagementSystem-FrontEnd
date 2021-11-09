@@ -5,15 +5,18 @@ import Controls from "../../components/controls/Controls";
 
 const initialFValues = {
     id: 0,
-    supName: '',
-    address1:'',
-    address2:'',
-    address3:'',
-    email:'',
-    contact:'',
-    gender:'male',
-    departmentId:'',
+    firstName: '',
+    lastName:'',
+    userName:'',
+    password:'',
+    level:'user',
+    contact:''
 }
+
+const levelValues = [
+    {id: 'admin', title: 'Admin'},
+    {id: 'user', title: 'User'},
+]
 
 export default function SupplierForm(props) {
 
@@ -21,18 +24,21 @@ export default function SupplierForm(props) {
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
-        if('supName' in fieldValues) {
-            temp.supName = fieldValues.supName ? "" : "This field is required"
+        if('firstName' in fieldValues) {
+            temp.firstName = fieldValues.firstName ? "" : "This field is required"
+        }
+        if('userName' in fieldValues) {
+            temp.userName = fieldValues.userName.length > 5 ? "" : "Invalid Username"
+        }
+        if('password' in fieldValues) {
+            temp.password = fieldValues.password.length > 5 ? "" : "Invalid Password"
         }
         if('contact' in fieldValues) {
-            temp.contact = fieldValues.contact.length == 10 ? "" : "This field is required"
+            temp.contact = fieldValues.contact.length == 10 ? "" : "Invalid Contact Number"
         }
-        if('email' in fieldValues) {
-            temp.email = (/$^|.+@.+..+/).test(values.email) ? "" : "Email is not valid"
+        if('level' in fieldValues) {
+            temp.level = fieldValues.level ? "" : "This field is required"
         }
-        // if('departmentId' in fieldValues) {
-        //     temp.departmentId = values.departmentId.length != 0 ? "" : "Thid field is required"
-        // }
         setErrors({
             ...temp
         })
@@ -71,43 +77,39 @@ export default function SupplierForm(props) {
             <Grid container direction="row">
                 <Grid item xs={6}>
                     <Controls.Input
-                        name="supName"
-                        label="Supplier Name"
-                        value={values.supName}
+                        name="firstName"
+                        label="First Name"
+                        value={values.firstName}
                         onChange={handleInputChange}
-                        error={errors.supName}
+                        error={errors.firstName}
                     />
 
                     <Controls.Input
-                        name="address1"
-                        label="Address Line 1"
-                        value={values.address1}
-                        onChange={handleInputChange}
-                    />
-
-                    <Controls.Input
-                        name="address2"
-                        label="Address Line 2"
-                        value={values.address2}
+                        name="lastName"
+                        label="Last Name"
+                        value={values.lastName}
                         onChange={handleInputChange}
                     />
 
                     <Controls.Input
-                        name="address3"
-                        label="Address Line 3"
-                        value={values.address3}
+                        name="userName"
+                        label="UserName (Min: 4 Characters)"
+                        value={values.userName}
                         onChange={handleInputChange}
+                        disabled={recordForEdit ? true : false}
+                        error={errors.userName}
+                    />
+
+                    <Controls.Input
+                        name="password"
+                        label="Password (Min: 4 Characters)"
+                        value={values.password}
+                        onChange={handleInputChange}
+                        error={errors.password}
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <Controls.Input
-                        name="email"
-                        label="Email"
-                        value={values.email}
-                        onChange={handleInputChange}
-                        error={errors.email}
-                    />
 
+                <Grid item xs={6}>
                     <Controls.Input
                         name="contact"
                         label="Contact Number"
@@ -117,6 +119,14 @@ export default function SupplierForm(props) {
                         type='number'
                     />
 
+                    <Controls.RadioGroup
+                        name="level"
+                        label="User Level"
+                        value={values.level}
+                        onChange={handleInputChange}
+                        items={levelValues}
+                        error={errors.level}
+                    />
                     <Controls.Button
                         style={{marginLeft: 10}}
                         type="submit"

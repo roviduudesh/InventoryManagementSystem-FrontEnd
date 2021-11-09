@@ -7,7 +7,10 @@ import {
   NavBtnLink,
 } from './NavBarElements';
 
-const Navbar = () => {
+export default function Navbar (props) {
+
+  const {user} = props;
+  
   return (
     <>
       <Nav>
@@ -32,6 +35,11 @@ const Navbar = () => {
           <NavLink to='/invoice' activeStyle>
             Invoices
           </NavLink>
+          <NavLink to='/user' activeStyle>
+            {
+            user ? user.level == 'admin' ? 'Users' : 'Profile' : null
+            }
+          </NavLink>
           {/* Second Nav */}
           <NavBtnLink to='/logout'>Logout</NavBtnLink>
         </NavMenu>
@@ -40,5 +48,3 @@ const Navbar = () => {
     </>
   );
 };
-
-export default Navbar;

@@ -12,6 +12,7 @@ import Loader from "../components/Loader";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import LoginForm from "../pages/Login/LoginForm";
 import { useHistory } from "react-router-dom";
+import User from "../pages/user/User";
 
 const useStyles = makeStyles({
     appMain: {
@@ -43,7 +44,9 @@ function App() {
                         />
                     </Route>
                     <Route path='/supplier'>
-                        <NavBar/>
+                        <NavBar
+                            user = {user}
+                        />
                         <Supplier
                             setLoading = {setLoading}
                             user = {user}
@@ -51,29 +54,46 @@ function App() {
                         />
                     </Route>
                     <Route path='/customer'>
-                        <NavBar/>
+                        <NavBar
+                            user = {user}
+                        />
                         <Customer
                             setLoading = {setLoading}
                             user = {user}
                         />
                     </Route>
                     <Route path='/item'>
-                        <NavBar/>
+                        <NavBar
+                            user = {user}
+                        />
                         <Item
                             setLoading = {setLoading}
                             user = {user}
                         />
                     </Route>
                     <Route path='/stock'>
-                        <NavBar/>
+                        <NavBar
+                            user = {user}
+                        />
                         <Stock
                             setLoading = {setLoading}
                             user = {user}
                         />
                     </Route>
                     <Route path='/invoice'>
-                        <NavBar/>
+                        <NavBar
+                            user = {user}
+                        />
                         <Invoice
+                            setLoading = {setLoading}
+                            user = {user}
+                        />
+                    </Route>
+                    <Route path='/user'>
+                        <NavBar
+                            user = {user}
+                        />
+                        <User
                             setLoading = {setLoading}
                             user = {user}
                         />

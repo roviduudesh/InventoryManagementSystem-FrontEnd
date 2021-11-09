@@ -15,6 +15,7 @@ const initialFValues = {
     quantity:'',
     amount:'',
     availableQty:'',
+    userId:'',
 }
 
 const useStyles = makeStyles(theme =>({
@@ -59,7 +60,7 @@ export default function InvoiceForm(props) {
             temp.itemId = fieldValues.itemId ? "" : "This field is required"
         }
         if('quantity' in fieldValues) {
-            temp.quantity = fieldValues.quantity ? "" : "Invalid Quantity"
+            temp.quantity = fieldValues.quantity ? "" : fieldValues.quantity < 0 ? "Invalid Quantity" : ""
         }
         if('availableQty' in fieldValues) {
             temp.quantity = values.quantity <= values.availableQty ? "" : "Invalid Quantityy"
@@ -98,16 +99,23 @@ export default function InvoiceForm(props) {
     }
 
     const setQty = e => {
-        console.log('AAAA')
-        console.log('values', values)
-
         if(values.itemId){
             let qty = itemQty.filter( function (i) {
                 return i.id == values.itemId;
             })[0].quantity;
+
             values.availableQty = qty;
-            // setValues(values);
         }
+    }
+
+    const setPrice = e => {
+        if(values.itemId && values.quantity && values.quantity > 0) {
+            let price = itemQty.filter( function (i) {
+                return i.id == values.itemId;
+            })[0].price;
+
+            values.amount = values.quantity * price;
+        } 
     }
 
     const addValue = e =>{
@@ -169,6 +177,7 @@ export default function InvoiceForm(props) {
                         onChange={handleInputChange}
                         type='number'
                         error={errors.quantity}
+                        onClick={setPrice()}
                     />
 
                     <Controls.Input

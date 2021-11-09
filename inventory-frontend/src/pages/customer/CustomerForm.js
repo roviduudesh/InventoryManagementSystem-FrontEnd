@@ -24,7 +24,7 @@ export default function CustomerForm(props) {
             temp.firstName = fieldValues.firstName ? "" : "This field is required"
         }
         if('contact' in fieldValues) {
-            temp.contact = fieldValues.contact.length == 10 || fieldValues.contact.length == 0 ? "" : "Invalid Contact Number"
+            temp.contact = fieldValues.contact.length == 10 ? "" : "Invalid Contact Number"
         }
         if('email' in fieldValues) {
             temp.email = (/$^|.+@.+..+/).test(values.email) ? "" : "Email is not valid"

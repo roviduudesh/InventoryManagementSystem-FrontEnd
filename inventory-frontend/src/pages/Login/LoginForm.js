@@ -53,13 +53,19 @@ export default function LoginForm(props) {
         if(validate()) {
             axios.post('http://localhost:8080/api/v1/login', values)
             .then(response => {
-                // console.log("Status: ", response.status);
+                let type;
                 console.log("response.data: ", response.data.data);
                 
-                setUser(response.data.data);
-                setLoading(false);
-                setOpenPopup(false)
-                let type = response.data.status == 200 ? 'success' : 'error';               
+                
+                if(response.data.status == 200){
+                    type = 'success';
+                    setUser(response.data.data);
+                    setLoading(false);
+                    setOpenPopup(false)
+                } else{
+                    type = 'error';
+                }
+                              
                 notification(true, response.data.message, type);
             }).catch(error => {
                 console.log('Something went wrong!', error);

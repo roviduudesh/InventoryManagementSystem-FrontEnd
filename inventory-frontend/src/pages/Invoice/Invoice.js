@@ -142,7 +142,7 @@ export default function Invoice(props) {
 
     const addToTable = (order, resetForm) => {
         let cusName;
-        
+        console.log('order', order)
         if(order.customerId){
             cusName = customerOptions.filter( function (cus) {
                 return cus.id == order.customerId;
@@ -155,6 +155,7 @@ export default function Invoice(props) {
         order.id = recordList.length;
         order.customerName = cusName;
         order.itemName = itemName;
+        order.userId = user.id;
 
         setRecordList([...recordList, order]);
 
@@ -224,7 +225,7 @@ export default function Invoice(props) {
                             }}
                             onChange={handleSearch}
                         />
-                        { user.level == 'admin' ?
+                        {/* { user.level == 'admin' ? */}
                             <Controls.Button
                                 className={classes.newButton}
                                 text="Add New"
@@ -236,7 +237,7 @@ export default function Invoice(props) {
                                     setRecordList([]);
                                 }}
                             />
-                        : null }
+                        {/* : null } */}
                     </Toolbar>
                     <TblContainer>
                         <TblHead/>
