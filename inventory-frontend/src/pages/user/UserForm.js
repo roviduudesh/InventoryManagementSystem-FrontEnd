@@ -28,10 +28,10 @@ export default function SupplierForm(props) {
             temp.firstName = fieldValues.firstName ? "" : "This field is required"
         }
         if('userName' in fieldValues) {
-            temp.userName = fieldValues.userName.length > 5 ? "" : "Invalid Username"
+            temp.userName = fieldValues.userName.length >= 4 ? "" : "Invalid Username"
         }
         if('password' in fieldValues) {
-            temp.password = fieldValues.password.length > 5 ? "" : "Invalid Password"
+            temp.password = fieldValues.password.length >= 4 ? "" : "Invalid Password"
         }
         if('contact' in fieldValues) {
             temp.contact = fieldValues.contact.length == 10 ? "" : "Invalid Contact Number"

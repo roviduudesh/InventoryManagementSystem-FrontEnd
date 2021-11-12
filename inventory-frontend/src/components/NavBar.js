@@ -19,7 +19,7 @@ export default function Navbar (props) {
         {/* </NavLink> */}
         <Bars />
         <NavMenu>
-          <h1 style={{color:'white', padding:'20px', fontWeight:'bold'}}>Inventory Management System </h1>
+          <h1 style={{color:'white', fontWeight:'bold', marginRight: '100px'}}>Inventory Management System </h1>
           <NavLink to='/supplier' activeStyle>
             Suppliers
           </NavLink>

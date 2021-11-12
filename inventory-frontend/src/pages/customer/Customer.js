@@ -60,7 +60,7 @@ export default function Customer(props) {
         {id: 'address2', label:'Address Line 2'},
         {id: 'address3', label:'Address Line 3'},
         {id: 'email', label:'Email'},
-        {id: 'contact', label:'Contact Numbers', disableSorting: true},
+        {id: 'contact', label:'Contact Number', disableSorting: true},
         user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
     ]
 

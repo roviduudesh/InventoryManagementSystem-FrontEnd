@@ -95,7 +95,7 @@ export default function CustomerForm(props) {
 
                     <Controls.Input
                         name="contact"
-                        label="Contact (Number 1, Number 2, ....)"
+                        label="Contact Number"
                         value={values.contact}
                         onChange={handleInputChange}
                         error={errors.contact}
