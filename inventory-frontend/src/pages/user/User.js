@@ -147,6 +147,7 @@ export default function User(props) {
     }
     
     const openInPopup = item =>{
+        item.password = '';
         setRecordForEdit(item)
         setOpenPopup(true);
     }
