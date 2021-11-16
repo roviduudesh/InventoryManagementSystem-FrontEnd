@@ -1,6 +1,6 @@
 export const base = {
     // baseUrl: 'http://localhost:8080/',
-    baseUrl: 'inven-backend.herokuapp.com/',
+    baseUrl: 'https://inven-backend.herokuapp.com/',
 };
 
 export const supplierApi = {
