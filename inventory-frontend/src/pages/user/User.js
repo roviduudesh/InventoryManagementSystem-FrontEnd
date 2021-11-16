@@ -16,6 +16,7 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import UserForm from './UserForm';
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
+import { base, userApi } from '../../enum/urls';
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme =>({
 
 export default function User(props) {
 
-    const {setLoading, user} = props;
+    const {setLoading, user, loading} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -68,7 +69,7 @@ export default function User(props) {
         console.log('user', user.level)
         if(user.level == 'admin'){ 
             setLoading(true);
-            axios.get('http://localhost:8080/api/v1/user/all')
+            axios.get(base.baseUrl + userApi.baseUrl + userApi.allUsers)
             .then((function (response){
                 // console.log("response.data", response.data)
                 setRecords(response.data.data)
@@ -76,13 +77,13 @@ export default function User(props) {
             }))
         } else{
             setLoading(true);
-            axios.get('http://localhost:8080/api/v1/user/profile', {params : {userId: user.id}})
+            axios.get(base.baseUrl + userApi.baseUrl + userApi.userprofile, {params : {userId: user.id}})
             .then((function (response){
                 console.log("response.data", response.data.data)
                 setRecords(response.data.data)
                 setLoading(false);
             }))
-        }setLoading(false);
+        }
     }, [notify]);
    
     const {
@@ -108,8 +109,8 @@ export default function User(props) {
         
         setLoading(true);
         if(user.id == 0){
-            console.log('user', user)
-            axios.post('http://localhost:8080/api/v1/user', user)
+            // console.log('user', user)
+            axios.post(base.baseUrl + userApi.baseUrl, user)
             .then(response => {
                 // console.log("Status: ", response.status);
                 console.log("response.data: ", response.data);
@@ -122,7 +123,7 @@ export default function User(props) {
         }
         else{
             console.log('userput', user)
-            axios.put('http://localhost:8080/api/v1/user/' + user.id, user)
+            axios.put(base.baseUrl + userApi.baseUrl + user.id, user)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
@@ -158,7 +159,7 @@ export default function User(props) {
             isOpen: false
         })
         setLoading(true);
-        axios.delete('http://localhost:8080/api/v1/user/'+ id)
+        axios.delete(base.baseUrl + userApi.baseUrl+ id)
         .then(response => {
             setLoading(false);
             let type = response.data.status == 200 ? 'success' : 'error';
@@ -169,7 +170,7 @@ export default function User(props) {
     }
 
     return (
-        user.level ? 
+        user.level && !loading ? 
         <>
             <PageHeader
                 title="User"

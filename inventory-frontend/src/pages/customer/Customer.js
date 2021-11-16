@@ -15,6 +15,7 @@ import Controls from "../../components/controls/Controls";
 import Popup from "../../components/Popup";
 import Notification from '../../components/Notification'
 import ConfirmDialog from '../../components/ConfirmDialog'
+import { base,customerApi } from '../../enum/urls';
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -67,7 +68,7 @@ export default function Customer(props) {
     useEffect(() => {
         setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/customer/all')
+        axios.get(base.baseUrl + customerApi.baseUrl + customerApi.allCustomers)
         .then((function (response){
             // console.log("response.data", response.data)
             setRecords(response.data.data)
@@ -98,7 +99,7 @@ export default function Customer(props) {
     const addOrEdit = (customer, resetForm) => {
         setLoading(true);
         if(customer.id == 0){
-            axios.post('http://localhost:8080/api/v1/customer', customer)
+            axios.post(base.baseUrl + customerApi.baseUrl , customer)
             .then(response => {
                 // console.log("Status: ", response.status);
                 // console.log("Message: ", response);
@@ -111,7 +112,7 @@ export default function Customer(props) {
         }
         else{
             console.log('customer ', customer);
-            axios.put('http://localhost:8080/api/v1/customer/' + customer.id, customer)
+            axios.put(base.baseUrl + customerApi.baseUrl + customer.id, customer)
             .then(response => {
                 // console.log("Status: ", response.status);
                 // console.log("Message: ", response);
@@ -147,7 +148,7 @@ export default function Customer(props) {
             ...confirmDialog,
             isOpen: false
         })
-        axios.delete('http://localhost:8080/api/v1/customer/'+ id)
+        axios.delete(base.baseUrl + customerApi.baseUrl + id)
         .then(response => {
             // setLoading(false);
             console.log("delete: ", response);

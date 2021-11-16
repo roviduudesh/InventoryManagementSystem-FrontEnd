@@ -16,6 +16,7 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import SupplierForm from "./SupplierForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
+import { base, supplierApi } from '../../enum/urls';
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -66,7 +67,7 @@ export default function Supplier(props) {
     useEffect(() => {
         setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/supplier/all')
+        axios.get(base.baseUrl + supplierApi.baseUrl + supplierApi.allSuppliers)
         .then((function (response){
             // console.log("response.data", response.data)
             setRecords(response.data.data)
@@ -96,7 +97,7 @@ export default function Supplier(props) {
     const addOrEdit = (supplier, resetForm) => {
         setLoading(true);
         if(supplier.id == 0){
-            axios.post('http://localhost:8080/api/v1/supplier', supplier)
+            axios.post(base.baseUrl + supplierApi.baseUrl, supplier)
             .then(response => {
                 // console.log("Status: ", response.status);
                 console.log("response.data: ", response.data);
@@ -108,7 +109,7 @@ export default function Supplier(props) {
             });
         }
         else{
-            axios.put('http://localhost:8080/api/v1/supplier/' + supplier.id, supplier)
+            axios.put(base.baseUrl + supplierApi.baseUrl + supplier.id, supplier)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
@@ -143,7 +144,7 @@ export default function Supplier(props) {
             isOpen: false
         })
         setLoading(true);
-        axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
+        axios.delete(base.baseUrl + supplierApi.baseUrl + id)
         .then(response => {
             setLoading(false);
             let type = response.data.status == 200 ? 'success' : 'error';

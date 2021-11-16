@@ -16,6 +16,7 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import ItemForm from "./ItemForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
+import { base, itemApi } from '../../enum/urls';
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -62,7 +63,7 @@ export default function Item(props) {
     useEffect(() => {
         setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/item/all')
+        axios.get(base.baseUrl + itemApi.baseUrl + itemApi.allitems)
         .then((function (response){
             console.log("response.data", response.data)
             setRecords(response.data.data)
@@ -94,7 +95,7 @@ export default function Item(props) {
         // console.log('item', item)
         setLoading(true);
         if(item.id == 0){
-            axios.post('http://localhost:8080/api/v1/item', item)
+            axios.post(base.baseUrl + itemApi.baseUrl, item)
             .then(response => {
                 setLoading(false);
                 let type = response.data.status == 200 ? 'success' : 'error';
@@ -105,7 +106,7 @@ export default function Item(props) {
         }
         else{
             // console.log('AAAA')
-            axios.put('http://localhost:8080/api/v1/item/' + item.id, item)
+            axios.put(base.baseUrl + itemApi.baseUrl + item.id, item)
             .then(response => {
                 setLoading(false);
                 let type = response.data.status == 200 ? 'success' : 'error';
@@ -138,7 +139,7 @@ export default function Item(props) {
             isOpen: false
         })
         setLoading(true);
-        axios.delete('http://localhost:8080/api/v1/item/'+ id)
+        axios.delete(base.baseUrl + itemApi.baseUrl + id)
         .then(response => {
             setLoading(false);
             let type = response.data.status == 200 ? 'success' : 'error';

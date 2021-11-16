@@ -17,6 +17,7 @@ import StockForm from "./StockForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
 import moment from 'moment';
+import { base, stockApi, supplierApi, itemApi } from '../../enum/urls';
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme =>({
 export default function Stock(props) {
 
     const [disabled, setDisabled] = useState(false);
-    const {setLoading, user} = props;
+    const {setLoading, user, loading} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -65,25 +66,25 @@ export default function Stock(props) {
 
     useEffect(() => {
         console.log('useEffect')
-
+        
         setLoading(true);
-        axios.get('http://localhost:8080/api/v1/supplier/supplier_id_name')
+        axios.get(base.baseUrl + supplierApi.baseUrl + supplierApi.supplierIdNameList)
         .then((function (response){
             // console.log("setSupplierOptions", response.data.data)
             setSupplierOptions(response.data.data)
-            setLoading(false);
+            // setLoading(false);
         }))
 
-        setLoading(true);
-        axios.get('http://localhost:8080/api/v1/item/item_id_name')
+        // setLoading(true);
+        axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdNameList)
         .then((function (response){
             // console.log("setItemOptions", response.data.data)
             setItemOptions(response.data.data)
-            setLoading(false);
+            // setLoading(false);
         }))
 
-        setLoading(true);
-        axios.get('http://localhost:8080/api/v1/stock/all')
+        // setLoading(true);
+        axios.get(base.baseUrl + stockApi.baseUrl + stockApi.allstocks)
         .then((function (response){
             // console.log("response.data.data", response.data.data)
             setRecords(response.data.data)
@@ -115,7 +116,7 @@ export default function Stock(props) {
         console.log('stock', stock)
         setLoading(true);
         if(stock.id == 0){
-            axios.post('http://localhost:8080/api/v1/stock', stock)
+            axios.post(base.baseUrl + stockApi.baseUrl, stock)
             .then(response => {
                 setLoading(false);
                 let type = response.data.status == 200 ? 'success' : 'error';
@@ -125,7 +126,7 @@ export default function Stock(props) {
             });
         }
         else{
-            axios.put('http://localhost:8080/api/v1/stock/' + stock.id, stock)
+            axios.put(base.baseUrl + stockApi.baseUrl + stock.id, stock)
             .then(response => {
                 setLoading(false);
                 let type = response.data.status == 200 ? 'success' : 'error';
@@ -154,25 +155,25 @@ export default function Stock(props) {
         setOpenPopup(true);
     }
 
-    const onDelete = id => {
-        setConfirmDialog({
-            ...confirmDialog,
-            isOpen: false
-        })
-        setLoading(true);
+    // const onDelete = id => {
+    //     setConfirmDialog({
+    //         ...confirmDialog,
+    //         isOpen: false
+    //     })
+    //     setLoading(true);
 
-        axios.delete('http://localhost:8080/api/v1/supplier/'+ id)
-        .then(response => {
-            setLoading(false);
-            let type = response.data.status == 200 ? 'success' : 'error';
-            notification(true, response.data.message, type);
-        }).catch(error => {
-            console.log('Something went wrong!', error);
-        });
-    }
+    //     axios.delete(base.baseUrl + stockApi.baseUrl + id)
+    //     .then(response => {
+    //         setLoading(false);
+    //         let type = response.data.status == 200 ? 'success' : 'error';
+    //         notification(true, response.data.message, type);
+    //     }).catch(error => {
+    //         console.log('Something went wrong!', error);
+    //     });
+    // }
 
     return (
-        user.level ?
+        user.level && !loading?
             <>
                 <PageHeader
                     title="Stock"
@@ -233,7 +234,7 @@ export default function Stock(props) {
                                                     </Controls.Button>
 
                                                     {/*Delete data*/}
-                                                    <Controls.Button
+                                                    {/* <Controls.Button
                                                         style={{marginRight: 10, paddingLeft: 20}}
                                                         size="small"
                                                         startIcon={<DeleteIcon/>}
@@ -249,7 +250,7 @@ export default function Stock(props) {
                                                             })
                                                         }}>
                                                         <DeleteIcon fontSize="small"/>
-                                                    </Controls.Button>
+                                                    </Controls.Button> */}
                                                 </TableCell>
                                             : null }
                                         </TableRow>)

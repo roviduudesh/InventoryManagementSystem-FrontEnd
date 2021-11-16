@@ -17,7 +17,7 @@ import InvoiceForm from "./InvoiceForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
 import ViewDetail from './ViewDetail';
-
+import { base, customerApi, orderApi, itemApi} from '../../enum/urls';
 
 const useStyles = makeStyles(theme =>({
     pageContent: {
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme =>({
 
 export default function Invoice(props) {
 
-    const {setLoading, user} = props;
+    const {setLoading, user, loading} = props;
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [recordForView, setRecordForView] = useState(null);
     const [recordList, setRecordList] = useState([]);
@@ -69,34 +69,34 @@ export default function Invoice(props) {
 
     useEffect(() => {
         setLoading(true);
-        axios.get('http://localhost:8080/api/v1/customer/customer_id_name')
+        axios.get(base.baseUrl + customerApi.baseUrl + customerApi.customerIdNameList)
         .then((function (response){
-            // console.log("customer", response.data.data)
+            console.log("customer", response.data.data)
             setCustomerOptions(response.data.data)
-            setLoading(false);
+            // setLoading(false);
         }))
 
         setLoading(true);
-        axios.get('http://localhost:8080/api/v1/item/item_id_name')
-        .then((function (response){
-            // console.log("setItemOptions", response.data.data)
-            setItemOptions(response.data.data)
-            setLoading(false);
-        }))
-
-        setLoading(true);
-        axios.get('http://localhost:8080/api/v1/item/item_id_qty')
+        axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdNameList)
         .then((function (response){
             console.log("setItemOptions", response.data.data)
+            setItemOptions(response.data.data)
+            // setLoading(false);
+        }))
+
+        setLoading(true);
+        axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdQtyList)
+        .then((function (response){
+            console.log("setItemQtyOptions", response.data.data)
             setItemQty(response.data.data)
-            setLoading(false);
+            // setLoading(false);
         }))
 
         setLoading(true);
         console.log('useEffect')
-        axios.get('http://localhost:8080/api/v1/order/all')
+        axios.get(base.baseUrl + orderApi.baseUrl + orderApi.allOrders)
         .then((function (response){
-            // console.log("response.data", response.data)
+            console.log("allOrders", response.data)
             setRecords(response.data.data)
             setLoading(false);
             // return list;
@@ -125,7 +125,7 @@ export default function Invoice(props) {
     const addOrEdit = (supplier, resetForm) => {
         setLoading(true);
             console.log('supplier', supplier)
-            axios.post('http://localhost:8080/api/v1/order', supplier)
+            axios.post(base.baseUrl + orderApi.baseUrl, supplier)
             .then(response => {
                 console.log("Status: ", response.status);
                 console.log("Message: ", response);
@@ -205,7 +205,7 @@ export default function Invoice(props) {
     // }
 
     return (
-        user.level ?
+        user.level && !loading?
             <>
                 <PageHeader
                     title="Invoice"
