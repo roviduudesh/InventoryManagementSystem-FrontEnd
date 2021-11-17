@@ -44,7 +44,8 @@ const useStyles = makeStyles(theme =>({
 
 export default function Invoice(props) {
 
-    const {setLoading, user, loading} = props;
+    const {setLoading, loading} = props;
+    const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [recordForView, setRecordForView] = useState(null);
     const [recordList, setRecordList] = useState([]);
@@ -205,7 +206,7 @@ export default function Invoice(props) {
     // }
 
     return (
-        user.level && !loading?
+        user && user.level && !loading ?
             <>
                 <PageHeader
                     title="Invoice"

@@ -45,7 +45,8 @@ const useStyles = makeStyles(theme =>({
 
 export default function Supplier(props) {
 
-    const {setLoading, user} = props;
+    const {setLoading} = props;
+    const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -61,18 +62,19 @@ export default function Supplier(props) {
         {id: 'address3', label:'Address Line 3'},
         {id: 'email', label:'Email'},
         {id: 'contact', label:'Contact Number', disableSorting: true},
-        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+        user && user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
     ]
     
     useEffect(() => {
         setLoading(true);
-        console.log('useEffect')
+        console.log('USER', user)
         axios.get(base.baseUrl + supplierApi.baseUrl + supplierApi.allSuppliers)
         .then((function (response){
             // console.log("response.data", response.data)
             setRecords(response.data.data)
             setLoading(false);
         }))
+        // setUser(localStorage.getItem('user'))
     }, [notify]);
    
     const {
@@ -155,7 +157,7 @@ export default function Supplier(props) {
     }
 
     return (
-        user.level ? 
+        user && user.level ? 
         <>
             <PageHeader
                 title="Supplier"

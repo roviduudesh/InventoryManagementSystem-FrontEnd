@@ -13,6 +13,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import LoginForm from "../pages/Login/LoginForm";
 import { useHistory } from "react-router-dom";
 import User from "../pages/user/User";
+import AAAAAA from "../pages/Login/AAAAAA";
 
 const useStyles = makeStyles({
     appMain: {
@@ -24,7 +25,8 @@ const useStyles = makeStyles({
 function App() {
     const classes = useStyles();
     const[loading, setLoading] = useState(false);
-    const[user, setUser] = useState({});
+    // const[user, setUser] = useState({});
+    const[user, setUser] = useState(localStorage.getItem('user'));
     
   return (
       <>
@@ -39,8 +41,8 @@ function App() {
                 
                     <Route path='/' exact>
                         <LoginForm
-                        setLoading = {setLoading}
-                        setUser = {setUser}
+                            setLoading = {setLoading}
+                            setUser = {setUser}
                         />
                     </Route>
                     <Route path='/supplier'>
@@ -50,6 +52,7 @@ function App() {
                         <Supplier
                             setLoading = {setLoading}
                             user = {user}
+                            setUser= {setUser}
                             // loading = {loading}
                         />
                     </Route>
@@ -99,7 +102,7 @@ function App() {
                         />
                     </Route>
                     <Route path='/logout'>
-                        <LoginForm
+                        <AAAAAA
                             setLoading = {setLoading}
                             setUser = {setUser}
                         />

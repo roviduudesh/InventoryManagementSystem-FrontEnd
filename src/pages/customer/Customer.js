@@ -45,7 +45,8 @@ const useStyles = makeStyles(theme =>({
 
 export default function Customer(props) {
 
-    const {setLoading, user} = props;
+    const {setLoading} = props;
+    const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -62,7 +63,7 @@ export default function Customer(props) {
         {id: 'address3', label:'Address Line 3'},
         {id: 'email', label:'Email'},
         {id: 'contact', label:'Contact Number', disableSorting: true},
-        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+        user && user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
     ]
 
     useEffect(() => {
@@ -129,7 +130,6 @@ export default function Customer(props) {
     }
 
     const notification = (open, message, type) =>{
-        console.log('AAAAAAAA')
         setNotify({
             isOpen: open,
             message: message,
@@ -160,7 +160,7 @@ export default function Customer(props) {
     }
 
     return (
-        user.level ? 
+        user && user.level ? 
             <>
                 <PageHeader
                     title="Customer"

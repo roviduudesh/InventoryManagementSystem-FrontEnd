@@ -20,7 +20,7 @@ const levelValues = [
 
 export default function SupplierForm(props) {
 
-    const {addOrEdit, recordForEdit} = props
+    const {addOrEdit, recordForEdit, user} = props
 
     const validate = (fieldValues = values) => {
         let temp = {...errors}
@@ -126,6 +126,7 @@ export default function SupplierForm(props) {
                         onChange={handleInputChange}
                         items={levelValues}
                         error={errors.level}
+                        disabled={user.level == 'user' ? true : false}
                     />
                     <Controls.Button
                         style={{marginLeft: 10}}

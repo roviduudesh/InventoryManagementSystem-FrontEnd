@@ -45,7 +45,8 @@ const useStyles = makeStyles(theme =>({
 export default function Stock(props) {
 
     const [disabled, setDisabled] = useState(false);
-    const {setLoading, user, loading} = props;
+    const {setLoading, loading} = props;
+    const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -61,7 +62,7 @@ export default function Stock(props) {
         {id: 'quantity', label:'Stock Quantity'},
         {id: 'supplier', label:'Supplier'},
         {id: 'item', label:'Item Name'},
-        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+        user && user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
     ]
 
     useEffect(() => {
@@ -173,7 +174,7 @@ export default function Stock(props) {
     // }
 
     return (
-        user.level && !loading?
+        user && user.level && !loading ?
             <>
                 <PageHeader
                     title="Stock"

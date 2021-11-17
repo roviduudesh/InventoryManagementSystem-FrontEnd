@@ -43,7 +43,8 @@ const useStyles = makeStyles(theme =>({
 
 export default function Item(props) {
 
-    const {setLoading, user} = props;
+    const {setLoading} = props;
+    const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -57,7 +58,7 @@ export default function Item(props) {
         {id: 'price', label:'Item Price'},
         {id: 'quantity', label:'Item Quantity'},
         {id: 'warranty', label:'Item Warranty'},
-        user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
+        user && user.level == 'admin' ? {id: 'actions', label:'Actions', disableSorting: true} : null
     ]
 
     useEffect(() => {
@@ -150,7 +151,7 @@ export default function Item(props) {
     }
 
     return (
-        user.level ?
+        user && user.level ?
             <>
                 <PageHeader
                     title="Item"

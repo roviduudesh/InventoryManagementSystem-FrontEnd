@@ -8,6 +8,7 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import Notification from '../../components/Notification';
 import Supplier from '../supplier/Supplier';
+import { base, loginApi } from '../../enum/urls';
 
 const initialFValues = {
     userName:'',
@@ -51,15 +52,15 @@ export default function LoginForm(props) {
         e.preventDefault();
         console.log('values', values)
         if(validate()) {
-            axios.post('http://localhost:8080/api/v1/login', values)
+            axios.post(base.baseUrl + loginApi.baseUrl, values)
             .then(response => {
                 let type;
                 console.log("response.data: ", response.data.data);
                 
-                
                 if(response.data.status == 200){
                     type = 'success';
                     setUser(response.data.data);
+                    window.localStorage.setItem('user', JSON.stringify(response.data.data));
                     setLoading(false);
                     setOpenPopup(false)
                 } else{

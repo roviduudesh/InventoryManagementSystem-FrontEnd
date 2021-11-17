@@ -45,7 +45,8 @@ const useStyles = makeStyles(theme =>({
 
 export default function User(props) {
 
-    const {setLoading, user, loading} = props;
+    const {setLoading, loading} = props;
+    const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
     const [recordForEdit, setRecordForEdit] = useState(null);
     const classes = useStyles();
     const [records, setRecords] = useState([]);
@@ -65,9 +66,7 @@ export default function User(props) {
     ]
     
     useEffect(() => {
-        
-        console.log('user', user.level)
-        if(user.level == 'admin'){ 
+        if(user && user.level == 'admin'){ 
             setLoading(true);
             axios.get(base.baseUrl + userApi.baseUrl + userApi.allUsers)
             .then((function (response){
@@ -75,7 +74,7 @@ export default function User(props) {
                 setRecords(response.data.data)
                 setLoading(false);
             }))
-        } else{
+        } else if(user && user.level == 'user'){
             setLoading(true);
             axios.get(base.baseUrl + userApi.baseUrl + userApi.userprofile, {params : {userId: user.id}})
             .then((function (response){
@@ -122,7 +121,6 @@ export default function User(props) {
             });
         }
         else{
-            console.log('userput', user)
             axios.put(base.baseUrl + userApi.baseUrl + user.id, user)
             .then(response => {
                 console.log("Status: ", response.status);
@@ -170,7 +168,7 @@ export default function User(props) {
     }
 
     return (
-        user.level && !loading ? 
+        user && user.level && !loading ? 
         <>
             <PageHeader
                 title="User"
@@ -272,6 +270,7 @@ export default function User(props) {
                 <UserForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit}
+                    user={user}
                 />
             </Popup>
 
