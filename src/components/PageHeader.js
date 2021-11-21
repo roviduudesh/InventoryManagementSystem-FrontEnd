@@ -4,7 +4,7 @@ import {makeStyles} from "@mui/styles";
 
 const useStyles = makeStyles(theme =>({
     root: {
-        backgroundColor: 'red'
+        // backgroundColor: 'red'
     },
     pageHeader:{
         padding: 10,

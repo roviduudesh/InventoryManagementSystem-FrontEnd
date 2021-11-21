@@ -13,7 +13,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import LoginForm from "../pages/Login/LoginForm";
 import { useHistory } from "react-router-dom";
 import User from "../pages/user/User";
-import AAAAAA from "../pages/Login/AAAAAA";
+import Logout from "../pages/Login/Logout";
+import Login from "../pages/Login/Login";
 
 const useStyles = makeStyles({
     appMain: {
@@ -40,7 +41,7 @@ function App() {
                 <Switch>
                 
                     <Route path='/' exact>
-                        <LoginForm
+                        <Login
                             setLoading = {setLoading}
                             setUser = {setUser}
                         />
@@ -102,7 +103,7 @@ function App() {
                         />
                     </Route>
                     <Route path='/logout'>
-                        <AAAAAA
+                        <Logout
                             setLoading = {setLoading}
                             setUser = {setUser}
                         />

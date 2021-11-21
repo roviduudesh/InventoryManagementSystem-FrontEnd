@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import LoginForm from './LoginForm';
+import Login from './Login';
 
-export default function AAAAAA(props) {
+export default function Logout(props) {
 
     const {setLoading, setUser} = props;
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
@@ -13,7 +13,7 @@ export default function AAAAAA(props) {
 
     return (
         
-            <LoginForm
+            <Login
                 setLoading = {setLoading}
                 setUser = {setUser}
             />
