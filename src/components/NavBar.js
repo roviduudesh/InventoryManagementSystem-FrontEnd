@@ -41,7 +41,7 @@ export default function Navbar (props) {
             }
           </NavLink>
           {/* Second Nav */}
-          <NavBtnLink to='/logout'>Logout</NavBtnLink>
+          <NavBtnLink to='/'>Logout</NavBtnLink>
         </NavMenu>
         
       </Nav>

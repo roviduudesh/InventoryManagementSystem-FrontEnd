@@ -55,10 +55,10 @@ export default function Login(props) {
         <>
             <Loader/>
 
-                <LoginForm
-                    recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit}
-                />
+            <LoginForm
+                recordForEdit={recordForEdit}
+                addOrEdit={addOrEdit}
+            />
 
             <Notification
                 notify={notify}
