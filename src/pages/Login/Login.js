@@ -11,7 +11,7 @@ export default function Login(props) {
 
     const history = useHistory();
     const {setLoading, setUser} = props;
-    const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
+    // const [user] = useState(JSON.parse(window.localStorage.getItem('user')));
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
     const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title:'', subTitle:''})
@@ -21,7 +21,7 @@ export default function Login(props) {
         axios.post(base.baseUrl + loginApi.baseUrl, user)
         .then(response => {
             let type;
-            console.log("response.data: ", response.data.data);
+            // console.log("response.data: ", response.data.data);
             
             if(response.data.status == 200){
                 type = 'success';
@@ -33,7 +33,6 @@ export default function Login(props) {
                 type = 'error';
                 setLoading(false);
             }
-                            
             notification(true, response.data.message, type);
         }).catch(error => {
             console.log('Something went wrong!', error);

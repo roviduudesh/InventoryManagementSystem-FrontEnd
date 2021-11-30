@@ -68,7 +68,7 @@ export default function Customer(props) {
 
     useEffect(() => {
         setLoading(true);
-        console.log('useEffect')
+        // console.log('useEffect')
         axios.get(base.baseUrl + customerApi.baseUrl + customerApi.allCustomers)
         .then((function (response){
             // console.log("response.data", response.data)
@@ -151,7 +151,7 @@ export default function Customer(props) {
         axios.delete(base.baseUrl + customerApi.baseUrl + id)
         .then(response => {
             // setLoading(false);
-            console.log("delete: ", response);
+            // console.log("delete: ", response);
             setLoading(false);
             notification(true, response.data.message, 'success');
         }).catch(error => {
@@ -271,6 +271,6 @@ export default function Customer(props) {
                     setConfirmDialog={setConfirmDialog}
                 />
             </>
-        : <div><h1>User Not Found !!!</h1></div>
+        : <div/>
     );
 }

@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Grid} from "@mui/material";
-import {useForm, Form} from ".././../components/useForm";
+import {useForm, Form} from "../../components/useForm";
 import Controls from "../../components/controls/Controls";
 
 const initialFValues = {

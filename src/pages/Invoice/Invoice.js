@@ -72,7 +72,7 @@ export default function Invoice(props) {
         setLoading(true);
         axios.get(base.baseUrl + customerApi.baseUrl + customerApi.customerIdNameList)
         .then((function (response){
-            console.log("customer", response.data.data)
+            // console.log("customer", response.data.data)
             setCustomerOptions(response.data.data)
             // setLoading(false);
         }))
@@ -80,7 +80,7 @@ export default function Invoice(props) {
         setLoading(true);
         axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdNameList)
         .then((function (response){
-            console.log("setItemOptions", response.data.data)
+            // console.log("setItemOptions", response.data.data)
             setItemOptions(response.data.data)
             // setLoading(false);
         }))
@@ -88,16 +88,16 @@ export default function Invoice(props) {
         setLoading(true);
         axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdQtyList)
         .then((function (response){
-            console.log("setItemQtyOptions", response.data.data)
+            // console.log("setItemQtyOptions", response.data.data)
             setItemQty(response.data.data)
             // setLoading(false);
         }))
 
         setLoading(true);
-        console.log('useEffect')
+        // console.log('useEffect')
         axios.get(base.baseUrl + orderApi.baseUrl + orderApi.allOrders)
         .then((function (response){
-            console.log("allOrders", response.data)
+            // console.log("allOrders", response.data)
             setRecords(response.data.data)
             setLoading(false);
             // return list;
@@ -125,11 +125,11 @@ export default function Invoice(props) {
 
     const addOrEdit = (supplier, resetForm) => {
         setLoading(true);
-            console.log('supplier', supplier)
+            // console.log('supplier', supplier)
             axios.post(base.baseUrl + orderApi.baseUrl, supplier)
             .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
+                // console.log("Status: ", response.status);
+                // console.log("Message: ", response);
                 setLoading(false);
                 notification(true, response.data.message, 'success');
             }).catch(error => {
@@ -143,7 +143,7 @@ export default function Invoice(props) {
 
     const addToTable = (order, resetForm) => {
         let cusName;
-        console.log('order', order)
+        // console.log('order', order)
         if(order.customerId){
             cusName = customerOptions.filter( function (cus) {
                 return cus.id == order.customerId;
@@ -161,12 +161,12 @@ export default function Invoice(props) {
         setRecordList([...recordList, order]);
 
         resetForm();
-        console.log('values', order)
-        console.log('recordList', recordList)
+        // console.log('values', order)
+        // console.log('recordList', recordList)
     }
 
     const notification = (open, message, type) =>{
-        console.log('AAAAAAAA')
+        // console.log('AAAAAAAA')
         setNotify({
             isOpen: open,
             message: message,
@@ -180,7 +180,7 @@ export default function Invoice(props) {
     // }
 
     const openViewDetail = item =>{
-        console.log('item', item.orderItemList);
+        // console.log('item', item.orderItemList);
         setRecordForView(item.orderItemList)
         setOpenPopupDetail(true);
     }
@@ -329,6 +329,6 @@ export default function Invoice(props) {
                     setConfirmDialog={setConfirmDialog}
                 />
             </>
-        : <div><h1>User Not Found !!!</h1></div>
+        : <div/>
     );
 }

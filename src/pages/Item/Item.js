@@ -63,10 +63,10 @@ export default function Item(props) {
 
     useEffect(() => {
         setLoading(true);
-        console.log('useEffect')
+        // console.log('useEffect')
         axios.get(base.baseUrl + itemApi.baseUrl + itemApi.allitems)
         .then((function (response){
-            console.log("response.data", response.data)
+            // console.log("response.data", response.data)
             setRecords(response.data.data)
             setLoading(false);
             // return list;
@@ -261,6 +261,6 @@ export default function Item(props) {
                     setConfirmDialog={setConfirmDialog}
                 />
             </>
-        : <div><h1>User Not Found !!!</h1></div>
+        : <div/>
     );
 }

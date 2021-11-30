@@ -67,7 +67,7 @@ export default function Supplier(props) {
     
     useEffect(() => {
         setLoading(true);
-        console.log('USER', user)
+        // console.log('USER', user)
         axios.get(base.baseUrl + supplierApi.baseUrl + supplierApi.allSuppliers)
         .then((function (response){
             // console.log("response.data", response.data)
@@ -102,7 +102,7 @@ export default function Supplier(props) {
             axios.post(base.baseUrl + supplierApi.baseUrl, supplier)
             .then(response => {
                 // console.log("Status: ", response.status);
-                console.log("response.data: ", response.data);
+                // console.log("response.data: ", response.data);
                 setLoading(false);
                 let type = response.data.status == 200 ? 'success' : 'error';               
                 notification(true, response.data.message, type);
@@ -113,8 +113,8 @@ export default function Supplier(props) {
         else{
             axios.put(base.baseUrl + supplierApi.baseUrl + supplier.id, supplier)
             .then(response => {
-                console.log("Status: ", response.status);
-                console.log("Message: ", response);
+                // console.log("Status: ", response.status);
+                // console.log("Message: ", response);
                 setLoading(false);
                 let type = response.data.status == 200 ? 'success' : 'error';
                 notification(true, response.data.message, type);
@@ -266,6 +266,6 @@ export default function Supplier(props) {
                 setConfirmDialog={setConfirmDialog}
             />
         </> 
-        : <div><h1>User Not Found !!!</h1></div>
+        : <div/>
     );
 }
