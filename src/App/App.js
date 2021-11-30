@@ -3,7 +3,7 @@ import './App.css';
 import {makeStyles} from "@mui/styles";
 import {CssBaseline} from "@material-ui/core";
 import Supplier from "../pages/supplier/Supplier"
-import Customer from "../pages/Customer/Customer";
+import Customer from "../pages/customer/Customer";
 import Item from "../pages/Item/Item";
 import Stock from "../pages/Stock/Stock";
 import Invoice from "../pages/Invoice/Invoice";
