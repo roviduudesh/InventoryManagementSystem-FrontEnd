@@ -12,7 +12,7 @@ const initialFValues = {
     customerName: '',
     itemId:'',
     itemName:'',
-    quantity:'',
+    quantity:0,
     amount:'',
     availableQty:'',
     userId:'',
@@ -59,11 +59,11 @@ export default function InvoiceForm(props) {
         if('itemId' in fieldValues) {
             temp.itemId = fieldValues.itemId ? "" : "This field is required"
         }
-        if('quantity' in fieldValues) {
-            temp.quantity = fieldValues.quantity ? "" : fieldValues.quantity < 0 ? "Invalid Quantity" : ""
-        }
         if('availableQty' in fieldValues) {
-            temp.quantity = values.quantity <= values.availableQty ? "" : "Invalid Quantityy"
+            temp.quantity = values.quantity <= values.availableQty ? "" : "Invalid Quantity"
+        }
+        if('quantity' in fieldValues) {
+            temp.quantity = fieldValues.quantity == "" || fieldValues.quantity <= 0 ? "Invalid Quantity" : ""
         }
         if('amount' in fieldValues) {
             temp.amount = fieldValues.amount ? "" : "Invalid Amount"
@@ -98,7 +98,7 @@ export default function InvoiceForm(props) {
         addOrEdit(recordList, resetForm);
     }
 
-    const setQty = e => {
+    const setQty = () => {
         if(values.itemId){
             let qty = itemQty.filter( function (i) {
                 return i.id == values.itemId;
@@ -108,7 +108,7 @@ export default function InvoiceForm(props) {
         }
     }
 
-    const setPrice = e => {
+    const setPrice = () => {
         if(values.itemId && values.quantity && values.quantity > 0) {
             let price = itemQty.filter( function (i) {
                 return i.id == values.itemId;

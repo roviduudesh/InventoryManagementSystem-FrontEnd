@@ -17,8 +17,9 @@ import SupplierForm from "./SupplierForm";
 import PageHeader from "../../components/PageHeader";
 import Loader from "../../components/Loader";
 import { base, supplierApi } from '../../enum/urls';
+import { Grid } from '@material-ui/core';
 
-const useStyles = makeStyles(theme =>({
+const useStyles = makeStyles(() =>({
     pageContent: {
         margin: 20,
         padding: 20
@@ -165,29 +166,32 @@ export default function Supplier(props) {
                 icon={<PeopleAltTwoToneIcon fontSize="large"/>}
             />
                 <Paper className={classes.pageContent}>
-                    <Toolbar>
-                        <Controls.Input
-                            className={classes.searchInput}
-                            label="Search Suppliers"
-                            InputProps={{
-                                startAdornment: (<InputAdornment position='start'>
-                                    <Search/>
-                                </InputAdornment>)
-                            }}
-                            onChange={handleSearch}
-                        />
-                        {user.level == 'admin' ? 
-                        <Controls.Button
-                            className={classes.newButton}
-                            text="Add New"
-                            variant="outlined"
-                            startIcon={<AddIcon/>}
-                            onClick={() => {
-                                setOpenPopup(true);
-                                setRecordForEdit(null);
-                            }}
-                        /> : null }
-                    </Toolbar>
+                    <Grid item xs={10}>
+                        <Toolbar>
+                            <Controls.Input
+                                className={classes.searchInput}
+                                label="Search Suppliers"
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position='start'>
+                                        <Search/>
+                                    </InputAdornment>)
+                                }}
+                                onChange={handleSearch}
+                            />
+                            {user.level == 'admin' ? 
+                            <Controls.Button
+                                className={classes.newButton}
+                                text="Add New"
+                                variant="outlined"
+                                startIcon={<AddIcon/>}
+                                onClick={() => {
+                                    setOpenPopup(true);
+                                    setRecordForEdit(null);
+                                }}
+                            /> : null }
+                        </Toolbar>
+                    </Grid>
+                    
                     <TblContainer>
                         <TblHead/>
                         <TableBody>

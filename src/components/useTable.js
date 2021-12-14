@@ -30,7 +30,7 @@ export default function UseTable(records, headCells, filterFn) {
     const [orderBy, setOrderBy] = useState()
 
     const TblContainer = props => (
-        <Table className={classes.table}>
+        <Table  className={classes.table}>
             {props.children}
         </Table>
     )

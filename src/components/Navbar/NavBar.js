@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import './Navbar.css';
 import ConfirmDialog from '../ConfirmDialog';
+import { Grid } from '@material-ui/core';
 
 export default function Navbar(props) {
 
@@ -17,6 +18,7 @@ export default function Navbar(props) {
   return (
     user && user.level ?
       <>
+      <Grid item xs={12}>
         <nav className='navbar'>
           <Link to='/supplier' className='navbar-logo' onClick={closeMobileMenu}>
             Inventory Management System
@@ -64,7 +66,7 @@ export default function Navbar(props) {
                                 setConfirmDialog({
                                     isOpen: true,
                                     title: 'Are you sure to logout ?',
-                                    subTitle: "You will be redirect to login page",
+                                    subTitle: "You will be redirected to login page",
                                     onConfirm: () => {
                                       history.push("/logout");
                                     }
@@ -75,7 +77,7 @@ export default function Navbar(props) {
             </li>
           </ul>
         </nav>
-
+        </Grid>
         <ConfirmDialog
             confirmDialog={confirmDialog}
             setConfirmDialog={setConfirmDialog}

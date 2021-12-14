@@ -77,13 +77,7 @@ export default function Invoice(props) {
             // setLoading(false);
         }))
 
-        setLoading(true);
-        axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdNameList)
-        .then((function (response){
-            // console.log("setItemOptions", response.data.data)
-            setItemOptions(response.data.data)
-            // setLoading(false);
-        }))
+        getItemOptionList();
 
         setLoading(true);
         axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdQtyList)
@@ -123,6 +117,16 @@ export default function Invoice(props) {
         })
     }
 
+    const getItemOptionList = () =>{
+        setLoading(true);
+        axios.get(base.baseUrl + itemApi.baseUrl + itemApi.itemIdNameList)
+        .then((function (response){
+            // console.log("setItemOptions", response.data.data)
+            setItemOptions(response.data.data)
+            setLoading(false);
+        }))
+    }
+
     const addOrEdit = (supplier, resetForm) => {
         setLoading(true);
             // console.log('supplier', supplier)
@@ -143,7 +147,7 @@ export default function Invoice(props) {
 
     const addToTable = (order, resetForm) => {
         let cusName;
-        // console.log('order', order)
+        console.log('order', order)
         if(order.customerId){
             cusName = customerOptions.filter( function (cus) {
                 return cus.id == order.customerId;
@@ -152,7 +156,10 @@ export default function Invoice(props) {
         let itemName = itemOptions.filter( function (item) {
             return item.id == order.itemId;
         })[0].name;
-          
+        
+        let index = itemOptions.findIndex(item => item.id == order.itemId);
+        itemOptions.splice(index, 1);
+
         order.id = recordList.length;
         order.customerName = cusName;
         order.itemName = itemName;
@@ -236,6 +243,7 @@ export default function Invoice(props) {
                                     setOpenPopupAdd(true);
                                     setRecordForEdit(null);
                                     setRecordList([]);
+                                    getItemOptionList();
                                 }}
                             />
                         {/* : null } */}
